@@ -1,6 +1,6 @@
 % rebase('base.tpl', title='Page Title')
 
-% from viewutils import truncate
+% from view_formatter import truncate
 
 <h1>Past Experiments</h1>
 

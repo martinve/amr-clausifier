@@ -1,0 +1,10 @@
+amrlib
+nltk
+penman
+texttable
+bottle
+bottle-sqlalchemy
+unidecode
+stanza
+spacy_stanza
+textacy

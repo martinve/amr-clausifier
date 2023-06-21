@@ -28,8 +28,8 @@ class CustomFormatter(logging.Formatter):
 
     def format(self, record):
         log_fmt = self.FORMATS.get(record.levelno)
-        formatter = logging.Formatter(log_fmt, datefmt='%H:%M:%S')
-        return formatter.format(record)
+        fmt = logging.Formatter(log_fmt, datefmt='%H:%M:%S')
+        return fmt.format(record)
 
 
 # Create custom logger logging all five levels

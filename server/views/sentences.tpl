@@ -1,5 +1,5 @@
 % rebase('base.tpl', title="All Sentences", container_extra="fluid")
-% import formatter
+% import view_formatter as formatter
 
 % from udutil import format_ud
 % import pickle

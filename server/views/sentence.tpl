@@ -2,7 +2,7 @@
 
 % import pickle
 % from udutil import format_ud
-% import formatter
+% import view_formatter as formatter
 
 <h1>Sentence Parse</h1>
 

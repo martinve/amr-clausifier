@@ -7,17 +7,18 @@ import persist
 import settings as cnf
 from models import Base
 
+
 engine = create_engine(f"sqlite:///{cnf.dbfile}")
 
 app = bottle.Bottle()
 plugin = sqlalchemy.Plugin(engine, Base.metadata, keyword="db", create=True, commit=True)
 app.install(plugin)
 
-import static_controller
-import parse_controller
-import import_controller
-import sentence_controller
-import passage_controller
+import controller_static as static_controller
+import controller_parse as parse_controller
+import controller_import as import_controller
+import controller_sentence as sentence_controller
+import controller_passage as passage_controller
 
 def is_authenticated_user(db, user, password):
     return True
