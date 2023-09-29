@@ -24,6 +24,12 @@ def get_stanza():
         pipeline = stanza.Pipeline(lang='en', processors='tokenize,ner,pos,lemma,depparse',
                               download_method=stanza.DownloadMethod.REUSE_RESOURCES)
     return pipeline
+
+
+def sent_to_ud(sent):
+    docpy = sent.to_dict()
+    return [docpy]
+
 def get_passage_analysis(passage: str, context=False):
     global init_nlp
     st0 = time.time()
@@ -39,7 +45,7 @@ def get_passage_analysis(passage: str, context=False):
             "sentence": sent_text,
             "semparse": {
                 "amr": get_amr_parse(sent_text),
-                "ud": sent.to_dict()
+                "ud": sent_to_ud(sent)
             }
         }
         meta["sentences"].append(parsed)
@@ -53,7 +59,7 @@ if __name__ == "__main__":
 
     passage_in = " ".join(sys.argv[1:])
 
-
+    passage_in = "Snow is white."
 
     passage_meta = get_passage_analysis(passage_in, "default")
     print(json.dumps(passage_meta, indent=2))

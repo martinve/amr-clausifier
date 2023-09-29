@@ -23,17 +23,6 @@ import logicconvert
 def db_persist_parse(db, data, update=False):
     passage = data["passage"]
 
-    '''
-    if update:
-        import controller_passage as psg
-        passage_id = data["id"]
-        psg = db.query(Passage).get(passage_id)
-        db.delete(psg)
-        if psg.filename and os.path.exists(psg.filename):
-            os.remove(cnf.datadir + psg.filename)
-    print(data)
-    '''
-
     if update:
         psg = db.query(Passage).get(data["id"])
     else:
@@ -51,6 +40,7 @@ def db_persist_parse(db, data, update=False):
         text = snt["sentence"]
         parse_amr = snt["semparse"]["amr"]
         udraw = snt["semparse"]["ud"]
+
         parse_ud = pickle.dumps(udraw)
 
         try:
@@ -116,7 +106,6 @@ def db_update_snt_logic(db, snt):
 def recreate_data(db):
 
     engine = cnf.engine
-    print("Engine", engine)
 
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)

@@ -63,9 +63,11 @@ def get_word_by_keyval(sentence, key, val):
 
 
 def get_word(sentence, val, debug=False):
+    print("get_word sentence", sentence)
+    debug = True
     if not sentence: return None
     for word in sentence:
-        if debug: print(word)
+        if debug: print("get_word", word)
         if word["text"] == val or word["lemma"] == val:
             return word
     return None
@@ -188,8 +190,8 @@ def extract_tree(sentence, rootid=0, spaces="", printedids=[], feats=False):
 
 
 def format_ud(ud):
-    assert isinstance(ud, list)
-    ud = ud[0]
+    if isinstance(ud, list):
+        ud = ud[0]
     ud_dict = ud
     ud_tree_lst.clear()
     tree = extract_tree(ud_dict, feats=True)
