@@ -1,14 +1,21 @@
+import sys
+
 import bottle
-from bottle import run, error, static_file
+from bottle import run, error, static_file, template
 from bottle.ext import sqlalchemy
 from sqlalchemy import create_engine
+import os
 
 import persist
 import settings as cnf
 from models import Base
 
-
-engine = create_engine(f"sqlite:///{cnf.dbfile}")
+if os.path.exists(cnf.dbfile):
+    engine = create_engine(f"sqlite:///{cnf.dbfile}")
+    cnf.engine = engine
+else:
+    print(f"ERROR: Cannot open database file {cnf.dbfile}\nExiting.")
+    sys.exit(-1)
 
 app = bottle.Bottle()
 plugin = sqlalchemy.Plugin(engine, Base.metadata, keyword="db", create=True, commit=True)
@@ -26,7 +33,7 @@ def is_authenticated_user(db, user, password):
 
 @error(404)
 def error404():
-    return static_file("error.html", root='./public')
+    return template("error")
 
 
 def serve_static(filename):

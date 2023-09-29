@@ -2,6 +2,8 @@ from bottle import template, redirect
 from models import Passage
 import persist
 import pickle
+import os
+import settings as cnf
 
 def index(db):
     rows = db.query(Passage).order_by(Passage.id.desc()).all()
@@ -29,9 +31,12 @@ def test_logic(db):
 
 
 def delete(db, id):
-    msg = f"Delete passage {id}"
 
-    x = db.query(Passage).get(id)
-    db.delete(x)
+
+    psg = db.query(Passage).get(id)
+    db.delete(psg)
+
+    if psg.filename and os.path.exists(psg.filename):
+        os.remove(cnf.datadir + psg.filename)
 
     return redirect("/")

@@ -26,6 +26,8 @@ import classifier.sentence_heuristic_classifier as snt_clf
 import udutil
 import simplifier
 
+import propbank_api as pb
+
 load_fresh = False
 save_meta = False
 load_meta = True
@@ -94,7 +96,6 @@ def get_sentence_clauses(sent, idx, debug=True, ud_shift=False, json_ld_logic=Tr
 
     clauses = json2logic.from_amr(json_list, debug=False)
 
-    import server.propbank_api as pb
     pb.describe(amr_root["pbverb"])
 
     # role_replacer.update_role_dict(role_dict)

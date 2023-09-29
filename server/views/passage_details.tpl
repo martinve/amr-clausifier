@@ -2,14 +2,18 @@
 
 <h1>Passage Parse</h1>
 
+<div>
+Cache file name: {{passage.filename}}
+</div>
+
+
+<a class="btn btn-outline-info btn-sm" href="/passage/{{passage.id}}/add">Add sentence</a>
+<a class="btn btn-outline-info btn-sm" href="/passage/{{passage.id}}/sentences">Sentence output</a>
+<a class="btn btn-outline-danger btn-sm" href="/passage/{{passage.id}}/delete">Delete passage</a>
+
+
+
 <table class="table table-hover">
-
-    <a href="/passage/{{passage.id}}/add">Add sentence</a>
-
-    <a href="/passage/{{passage.id}}/sentences">Sentence output</a>
-
-    <a href="/passage/{{passage.id}}/delete">Delete passage</a>
-
     <tbody>
         % for row in passage.sentences:
         <tr>

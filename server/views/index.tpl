@@ -4,6 +4,8 @@
 
 <h1>Past Experiments</h1>
 
+Total: {{ len(rows) }}
+
 % if len(rows) > 0:
 
     <table class="table table-hover">

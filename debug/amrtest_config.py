@@ -45,4 +45,4 @@ dev_debug = {
 
 
 locals().update(full_debug)
-locals().update(no_debug)
+# locals().update(no_debug)

@@ -9,7 +9,7 @@
     %end
     <div class="form-group">
         <label for="passage">Passage</label>
-        <textarea class="form-control" id="passage" name="passage" rows="20"></textarea>
+        <textarea class="form-control" id="passage" name="passage" rows="10"></textarea>
     </div>
     <button type="submit" class="btn btn-outline-primary mt-2">Parse passage</button>
 </form>

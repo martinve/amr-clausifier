@@ -1,6 +1,7 @@
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy import Column, Integer, String, ForeignKey
 
+
 Base = declarative_base()
 
 
@@ -11,8 +12,9 @@ class Passage(Base):
     passage = Column(String)
     rawdata = Column(String)
     context = Column(String)
+    filename = Column(String)
 
-    sentences = relationship("Sentence")
+    sentences = relationship("Sentence", cascade="all,delete-orphan")
 
     def __repr__(self):
         return f"<Passage id={self.id} text={self.passage}>"

@@ -1,33 +1,51 @@
 import pickle
 from bottle import redirect
-
-from models import Passage, Sentence
-import os, sys
+from models import Passage, Sentence, Base
+import os, sys, json
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
+import settings as cnf
 import amrutil
 import amr_clausifier
 import logicconvert
 
+#from settings.py in parent directory, import the file as alias cnf
+# import settings as cnf
+# from models import Base
+# engine = cnf.engine
 
 
 
-def db_persist_parse(db, data):
+
+def db_persist_parse(db, data, update=False):
     passage = data["passage"]
-    p2 = passage
 
-    exists = db.query(Passage).filter(Passage.passage == passage).first()
-    if exists:
-        # TODO: Add it to paassage
-        redirect("/")  # Passage already exists
+    '''
+    if update:
+        import controller_passage as psg
+        passage_id = data["id"]
+        psg = db.query(Passage).get(passage_id)
+        db.delete(psg)
+        if psg.filename and os.path.exists(psg.filename):
+            os.remove(cnf.datadir + psg.filename)
+    print(data)
+    '''
 
-    exp = Passage()
-    exp.passage = passage
-    exp.rawdata = pickle.dumps(data)
-    exp.context = ""
+    if update:
+        psg = db.query(Passage).get(data["id"])
+    else:
+        psg = Passage()
+
+    # if "id" in data.keys():
+    #    psg.id = data["id"]
+
+    psg.passage = passage
+    psg.filename = data["filename"]
+    psg.rawdata = pickle.dumps(data)
+    psg.context = ""
 
     for snt in data["sentences"]:
         text = snt["sentence"]
@@ -44,6 +62,11 @@ def db_persist_parse(db, data):
         parse_ud_raw = pickle.dumps(udraw)
 
         snt = Sentence()
+        if update:
+            res = db.query(Sentence).where(Sentence.passage_id == psg.id).where(Sentence.text == text).first()
+            if res:
+                snt = res
+
         snt.text = text
         snt.parse_amr = parse_amr
         snt.parse_ud = parse_ud
@@ -52,12 +75,12 @@ def db_persist_parse(db, data):
         snt.rawvalue = pickle.dumps(rawvalue)
         snt.logic = pickle.dumps(logic)
 
-        exp.sentences.append(snt)
+        psg.sentences.append(snt)
 
-    db.add(exp)
+    db.add(psg)
     db.commit()
 
-    return exp.id
+    return psg.id
 
 
 def db_update_snt_logic(db, snt):
@@ -91,6 +114,10 @@ def db_update_snt_logic(db, snt):
 
 
 def recreate_data(db):
+
+    engine = cnf.engine
+    print("Engine", engine)
+
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
 
@@ -98,7 +125,8 @@ def recreate_data(db):
         if file.endswith(".json"):
             with open(cnf.datadir + file) as f:
                 data = json.loads(f.read())
-                persist.db_persist_parse(db, data)
+                data["filename"] = file
+                db_persist_parse(db, data)
 
     redirect("/")
 

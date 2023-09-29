@@ -8,7 +8,10 @@ from penman import Graph
 import config
 import pprint
 import types_util
-import server.propbank_api as pb
+
+import propbank_api as pb
+
+
 from debug.amr_test_cases import get_example_snt
 import debug.amrtest_config as cfg
 from logger import logger
@@ -180,6 +183,46 @@ def find_from_clauses(clauses, source=None, role=None, target=None):
     return match
 
 
+def get_concept_edges(g, concept_values, attribute_values):
+    concept_edges = []
+    for var in concept_values.keys():
+        edges = g.edges(source=var)
+        if len(edges) > 0:
+            for e in edges:
+                if cfg.debug_print_edges:
+                    logger.info(f"Edge [{concept_values[var]}]: {e}")
+                concept_edges.append(e)
+        else:
+            if var not in attribute_values:
+                logger.warning(f"Add to attribute values: {var} ({concept_values[var]})")
+                attribute_values.update({var: concept_values[var]})
+            else:
+                logger.warning(f"Ignore {var} ({concept_values[var]})")
+
+    return concept_edges
+
+
+def edges_replace_attribute_values(concept_edges, attribute_values):
+    for idx, e in enumerate(concept_edges):
+        if e.target in attribute_values.keys():
+            concept_edges[idx] = e._replace(target=attribute_values[e.target])
+
+    if cfg.debug_concept_edges:
+        logger.info("Replaced Edge target with `attribute_values` values")
+        logger.debug(f"concept_edges: {concept_edges}")
+
+    return concept_edges
+
+
+def replace_edges_value_keys(concept_edges, concept_values):
+    for idx, e in enumerate(concept_edges):
+        if e.target in concept_values.keys():
+            concept_edges[idx] = e._replace(target=concept_values[e.target])
+    for idx, e in enumerate(concept_edges):
+        if e.source in concept_values.keys():
+            concept_edges[idx] = e._replace(source=concept_values[e.source])
+    return concept_edges
+
 def extract_clauses(amr_str):
     if cfg.debug_amr: logger.info(amr_str)
 
@@ -201,21 +244,7 @@ def extract_clauses(amr_str):
         logger.info(f"Graph edges ({len(_edges)}): {_edges}")
 
 
-    concept_edges = []
-    for var in concept_values.keys():
-        edges = g.edges(source=var)
-        if len(edges) > 0:
-            for e in edges:
-                if cfg.debug_print_edges:
-                    logger.info(f"Edge [{concept_values[var]}]: {e}")
-                concept_edges.append(e)
-        else:
-            if var not in attribute_values:
-                logger.warning(f"Add to attribute values: {var} ({concept_values[var]})")
-                attribute_values.update({var: concept_values[var]})
-            else:
-                logger.warning(f"Ignore {var} ({concept_values[var]})")
-
+    concept_edges = get_concept_edges(g, concept_values, attribute_values)
 
     if cfg.debug_concept_edges:
         _val = pprint.pformat(concept_edges)
@@ -226,14 +255,7 @@ def extract_clauses(amr_str):
         _val = pprint.pformat(attribute_values)
         logger.debug(f"attribute_values: {_val}")
 
-    for idx, e in enumerate(concept_edges):
-        if e.target in attribute_values.keys():
-            concept_edges[idx] = e._replace(target=attribute_values[e.target])
-
-    if cfg.debug_concept_edges:
-        logger.info("Replaced Edge target with `attribute_values` values")
-        logger.debug(f"concept_edges: {concept_edges}")
-
+    concept_edges = edges_replace_attribute_values(concept_edges, attribute_values)
 
     role_dict = get_propbank_role_dict(g)
 
@@ -308,12 +330,7 @@ def extract_clauses(amr_str):
     """
     Replace the concept edges with value_keys
     """
-    for idx, e in enumerate(concept_edges):
-        if e.target in concept_values.keys():
-            concept_edges[idx] = e._replace(target=concept_values[e.target])
-    for idx, e in enumerate(concept_edges):
-        if e.source in concept_values.keys():
-            concept_edges[idx] = e._replace(source=concept_values[e.source])
+    concept_edges = replace_edges_value_keys(concept_edges, concept_values)
 
     if cfg.debug_edge_replacements:
         logger.info("Replaced Edge source and target with values from `concept_values`")
