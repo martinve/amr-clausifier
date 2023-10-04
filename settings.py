@@ -1,11 +1,13 @@
 datadir = "../cache/"
-dbfile = datadir + "experiments.sqlite" # "clausifier.sqlite"
+dbfile = datadir + "clausifier.sqlite"
 protocol = "http"
 port = 9002
 host = "127.0.0.1"
 
 amr_server_port = 9003
 amr_server_host = "localhost"
-amr_parse_model = "model_parse_gsii-v0_1_0"
+amr_parse_model = "model_parse_t5-v0_2_0"  # "model_parse_t5-v0_2_0" , "model_parse_gsii-v0_1_0"
+
+propbank_corpus = "propbank-3.4"
 
 debug_clauses = False

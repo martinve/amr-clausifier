@@ -73,5 +73,9 @@ setup_routing(app)
 
 if __name__ == "__main__":
     if stog is None:
-        stog = amrlib.load_stog_model(model_dir="models/model_stog/" + cfg.amr_parse_model)
+        model_path = "models/model_stog/" + cfg.amr_parse_model
+        if not os.path.exists(model_path):
+            print("ERROR. Parse model not found:", model_path, "\nExiting.")
+            sys.exit(-1)
+        stog = amrlib.load_stog_model(model_dir=model_path)
     run(host="localhost", port=port, app=app)

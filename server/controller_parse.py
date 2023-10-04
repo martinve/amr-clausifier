@@ -35,6 +35,8 @@ def update(db):
     parse_json["filename"] = fname
     parse_json["id"] = passage_id
 
+    print("Start saving.")
     last_id = persist.db_persist_parse(db, parse_json, do_update)
+    print("End saving")
 
     redirect(f"/passage/{last_id}")

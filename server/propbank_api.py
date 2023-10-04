@@ -1,5 +1,6 @@
 import sys
 from typing import Any
+from xml.etree import ElementTree
 
 from nltk import LazySubsequence
 import re
@@ -18,30 +19,10 @@ NOTE: Modifiers are present in Propbank release 3.4 but not in release 1.0
 that is available via nltk.download()
 """
 
-modifiers = {
-    "COM": "Comitative",
-    "LOC": "Locative",
-    "DIR": "Directional",
-    "GOL": "Goal",
-    "MNR": "Manner",
-    "TMP": "Temporal",
-    "EXT": "Extent",
-    "REC": "Reciprocals",
-    "PRD": "Secondary_Predication",
-    "PRP": "Purpose",
-    "CAU": "Cause",
-    "DIS": "Discourse",
-    "ADV": "Adverbials",
-    "ADJ": "Adjectival",
-    "MOD": "Modal",
-    "NEG": "Negation",
-    "DSP": "Direct_Speech",
-    "LVB": "Light_Verb",
-    "CXN": "Construction",
-    "PAG": "Agent",
-    "PPT": "Patient",
-    "VSP": "Verb-specific"
-}
+import amrconfig as acfg
+import settings as cfg
+
+modifiers = acfg.pb_role_modifiers
 
 
 def load_data():
@@ -164,11 +145,44 @@ def init_propbank():
     """
 
     parse_fileid_xform=lambda filename: re.sub(r"^wsj/\d\d/", "", filename)
-
     from nltk.corpus.reader.propbank import PropbankCorpusReader
+
+    class MyPropbankCorpusReader(PropbankCorpusReader):
+        def roleset(self, roleset_id):
+            """
+            :return: the xml description for the given roleset.
+            """
+            baseform = roleset_id.split(".")[0]
+
+            import csv
+            # print(f"Searching for roleset: {roleset_id}")
+            with open(self.root + "/framelist.tsv") as file:
+                tsv_file = csv.reader(file, delimiter="\t")
+                for line in tsv_file:
+                    # print(f"|{line[0]}|{roleset_id}")
+                    if line[0] == roleset_id:
+                        baseform = line[1]
+                        # print("Found:", baseform)
+                        break
+
+            framefile = "frames/%s.xml" % baseform
+
+            if framefile not in self._framefiles:
+                # print("Frameset file for %s not found" % roleset_id)
+                raise ValueError("Frameset file for %s not found" % roleset_id)
+
+            # n.b.: The encoding for XML fileids is specified by the file
+            # itself; so we ignore self._encoding here.
+            with self.abspath(framefile).open() as fp:
+                etree = ElementTree.parse(fp).getroot()
+            for roleset in etree.findall("predicate/roleset"):
+                if roleset.attrib["id"] == roleset_id:
+                    return roleset
+            raise ValueError(f"Roleset {roleset_id} not found in {framefile}")
+
     propbank = PropbankCorpusReader = LazyCorpusLoader(
-        "propbank-3.1",
-        PropbankCorpusReader,
+        cfg.propbank_corpus,
+        MyPropbankCorpusReader,
         "prop.txt",
         framefiles=r"frames/.*\.xml",
         verbsfile="verbs.txt",

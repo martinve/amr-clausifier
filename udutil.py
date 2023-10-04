@@ -1,4 +1,5 @@
 import sys
+from tabulate import tabulate
 
 """
 Utilities for extracting informatin from Universal Dependencies
@@ -32,8 +33,6 @@ def get_named_entities(snt_ud):
         if tok["ner"] == "O":
             continue
 
-        # print(tok["ner"], tok["text"], tok["lemma"])
-
         prefix = tok["ner"][0]
 
         if prefix == "B":
@@ -63,11 +62,9 @@ def get_word_by_keyval(sentence, key, val):
 
 
 def get_word(sentence, val, debug=False):
-    print("get_word sentence", sentence)
     debug = True
     if not sentence: return None
     for word in sentence:
-        if debug: print("get_word", word)
         if word["text"] == val or word["lemma"] == val:
             return word
     return None
@@ -132,8 +129,6 @@ def nice_word_strrep(word, feats=False):
 
 
 def print_plain(snt_ud):
-
-    from tabulate import tabulate
 
     del_keys = ["start_char", "end_char"]
     for del_key in del_keys:

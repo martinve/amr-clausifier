@@ -68,18 +68,6 @@ def get_concept_values(g):
     return concept_values
 
 
-def swap_edge_elements(e, elem1, elem2):
-    """
-    Swap the position of elements in edge
-
-    :param e:
-    :param elem1:
-    :param elem2:
-    :return:
-    """
-
-    print(type(e))
-
 
 def get_top_verb(g):
     for it in g.instances():

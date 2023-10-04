@@ -37,10 +37,7 @@ def get_root(amr_graph):
 
 
 def check_edge(edge, parent):
-    return
-    print("Parent:", parent)
-    print("Edge", edge)
-
+    pass
 
 def parse_init_root(json_list, edge):
     root = get_root(json_list)

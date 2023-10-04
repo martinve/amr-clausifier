@@ -49,7 +49,6 @@ def db_persist_parse(db, data, update=False):
             logic = ""
 
         rawvalue = pickle.dumps(snt)
-        parse_ud_raw = pickle.dumps(udraw)
 
         snt = Sentence()
         if update:
