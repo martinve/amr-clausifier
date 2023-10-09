@@ -24,7 +24,6 @@ logfile = "/dev/null"
 
 stog = None  # at startup nlp is assigned the stanza pipeline
 
-port = 9003
 app = bottle.Bottle()
 
 count = 0
@@ -78,4 +77,4 @@ if __name__ == "__main__":
             print("ERROR. Parse model not found:", model_path, "\nExiting.")
             sys.exit(-1)
         stog = amrlib.load_stog_model(model_dir=model_path)
-    run(host="localhost", port=port, app=app)
+    run(host="localhost", port=server_port, app=app)
