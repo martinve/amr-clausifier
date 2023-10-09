@@ -219,6 +219,7 @@ def get_test_cases():
     sents.update({17: "He drives carelessly."})
 
     amr = """
+    # Boy ate steak with knife and fork and soup with spoon.
     (a / and 
         :op1 (e / eat-01 
             :ARG0 (b / boy) 
@@ -266,6 +267,21 @@ def get_test_cases():
     """
     graphs.update({20: amr})
     sents.update({20: "He was never short of money, for he had a purse which was never empty."})
+
+
+    amr = """
+    (s / stab-01
+      :ARG0 (p / person
+            :name (n / name
+                  :op1 "Brutus"))
+      :ARG1 (p2 / person
+            :name (n2 / name
+                  :op1 "Caesar"))
+      :ARG2 (a / agora)
+      :instrument (k / knife))
+      """
+    graphs.update({21: amr})
+    sents.update({21: "Brutus stabs Caesar with a knife in an agora ."})
 
     return graphs, sents
 

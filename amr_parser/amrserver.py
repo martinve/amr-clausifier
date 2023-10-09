@@ -1,13 +1,9 @@
 #!/usr/bin/env python3
 
+import setup_path
 import os, sys, json
 import bottle
 from bottle import run, request
-
-current = os.path.dirname(os.path.realpath(__file__))
-parent = os.path.dirname(current)
-sys.path.append(parent)
-
 import settings as cfg
 
 try:
@@ -57,7 +53,8 @@ def parse_text(text):
     amr = g[0]
     result = {
         "text": text,
-        "amr": amr,
+        "parse": amr,
+        "model": cfg.amr_parse_model
     }
 
     return result

@@ -37,12 +37,11 @@ dev_debug = {
     "debug_print_edges": False,
     "debug_attribute_value_map": False,
     "debug_concept_values": False,
-    "debug_concept_edges": True,
+    "debug_concept_edges": False,
     "debug_attr_value_map": False,
     "debug_edge_replacements": False,
-    "debug_clauses": True
+    "debug_clauses": False
 }
 
 
-locals().update(full_debug)
-# locals().update(no_debug)
+locals().update(dev_debug)

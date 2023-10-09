@@ -21,12 +21,12 @@ import json_to_logic as json2logic
 from logger import logger
 from solver import run_solver
 
+
 import classifier.sentence_heuristic_classifier as snt_clf
+import propbank.propbank_api as pb
 
 import udutil
 import simplifier
-
-import propbank_api as pb
 
 load_fresh = False
 save_meta = False
@@ -35,6 +35,8 @@ load_meta = True
 
 def is_question(snt):
     return snt.endswith("?")
+
+
 
 
 def get_sentence_clauses(sent, idx, debug=True, ud_shift=False, json_ld_logic=True):
@@ -81,7 +83,8 @@ def get_sentence_clauses(sent, idx, debug=True, ud_shift=False, json_ld_logic=Tr
         "entities": udutil.get_named_entities(ud),
         "verbs": udutil.get_verbs(ud),
         "ud_root": ud_root,
-        "amr_root": amr_root
+        "amr_root": amr_root,
+        "pb_args": pb.describe(amr_root["pbverb"])
     }
 
     # assert(amr_root is not None)
@@ -164,7 +167,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Convert passage to logical form.')
     parser.add_argument("passage", nargs="?")
     parser.add_argument("-r", "--reload", action='store_true',
-                        help="Re-create and fetch parse graphs from server.")
+                        help="Re-create and fetch parse graphs from gui.")
     parser.add_argument("-x", "--clear", action='store_true', help="Clear console output.")
     parser.add_argument("-l", "--load", action='store_true', help="Load already saved file.")
     parser.add_argument("-s", "--save", help="Provide custom name for cache. Otherwise default `cache` is used.")

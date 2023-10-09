@@ -9,7 +9,7 @@ import config
 import pprint
 import types_util
 
-import propbank_api as pb
+import propbank.propbank_api as pb
 
 
 from debug.amr_test_cases import get_example_snt
@@ -57,7 +57,7 @@ def get_concept_values(g):
     for c in g.instances():
         _target = c.target
         if _target in concept_values.values():
-            if not is_propbank_word(c.target):
+            if not pb.is_propbank_word(c.target):
                 _target = f"{c.target}{_k}"
                 _k += 1
         concept_values.update({c.source: _target})
@@ -69,6 +69,7 @@ def get_concept_values(g):
 
 
 
+
 def get_top_verb(g):
     for it in g.instances():
         if it.source == g.top:
@@ -77,35 +78,27 @@ def get_top_verb(g):
     return False
 
 
-def is_propbank_word(word):
-    if len(word) < 2:
-        return
-    check = bool(re.match("[a-z-]*-[0-9]{2}", word))
-    # logger.warning(f"{word}: {check}")
-    return check
 
 
-def prepare_propbank_word(word):
-    word = ".".join(word.rsplit("-", 1))
-    word = word.replace("-", "_")
-    return word
+
+
 
 
 def get_propbank_words(g):
     word_list = []
     for t in g.triples:
         for el in list(t):
-            if is_propbank_word(el):
+            if pb.is_propbank_word(el):
                 word_list.append(el)
     return word_list
 
 
 def propbank_fetch_word(word):
-    pb_key = prepare_propbank_word(word)
+    pb_key = pb.prepare_propbank_word(word)
     if cfg.debug_propbank:
         logger.info(f"Attempt to fetch propbank roles for `{word}` ({pb_key})")
     roles = pb.describe(pb_key)
-    # logger.error(f"200 {roles}")
+    logger.info(f"200 {roles}")
     return roles
 
 
@@ -122,13 +115,13 @@ def get_propbank_role_dict(g):
     role_dict = {}
     not_mapped_roles = []
     for t in g.triples:
-        if is_propbank_word(t[0]):
+        if pb.is_propbank_word(t[0]):
             roles = propbank_fetch_word(t[0])
             if roles:
                 role_dict.update({t[0]: roles})
             else:
                 not_mapped_roles.append(t[0])
-        if is_propbank_word(t[2]):
+        if pb.is_propbank_word(t[2]):
             roles = propbank_fetch_word(t[2])
             if roles:
                 role_dict.update({t[2]: roles})
@@ -182,15 +175,22 @@ def get_concept_edges(g, concept_values, attribute_values):
                 concept_edges.append(e)
         else:
             if var not in attribute_values:
-                logger.warning(f"Add to attribute values: {var} ({concept_values[var]})")
+                if cfg.debug_print_edges:
+                    logger.warning(f"Add to attribute values: {var} ({concept_values[var]})")
                 attribute_values.update({var: concept_values[var]})
             else:
-                logger.warning(f"Ignore {var} ({concept_values[var]})")
+                if cfg.debug_print_edges:
+                    logger.warning(f"Ignore {var} ({concept_values[var]})")
 
     return concept_edges
 
 
 def edges_replace_attribute_values(concept_edges, attribute_values):
+
+    # logger.warning(concept_edges)
+    # logger.warning(attribute_values)
+
+
     for idx, e in enumerate(concept_edges):
         if e.target in attribute_values.keys():
             concept_edges[idx] = e._replace(target=attribute_values[e.target])
@@ -202,14 +202,31 @@ def edges_replace_attribute_values(concept_edges, attribute_values):
     return concept_edges
 
 
-def replace_edges_value_keys(concept_edges, concept_values):
+def replace_edges_value_keys(concept_edges, concept_values, polarities):
+    #logger.error(polarities)
     for idx, e in enumerate(concept_edges):
         if e.target in concept_values.keys():
-            concept_edges[idx] = e._replace(target=concept_values[e.target])
+            val = concept_values[e.target]
+
+            concept_edges[idx] = e._replace(target=val)
     for idx, e in enumerate(concept_edges):
         if e.source in concept_values.keys():
-            concept_edges[idx] = e._replace(source=concept_values[e.source])
+            val = concept_values[e.source]
+            if e.source in polarities.keys():
+                val = polarities[e.source] + val
+            concept_edges[idx] = e._replace(source=val)
     return concept_edges
+
+
+def get_polarities(g):
+
+    polarities = {}
+
+    edges = g.attributes(role=":polarity")
+    for e in edges:
+        polarities[e.source] = e.target
+    return polarities
+
 
 def extract_clauses(amr_str):
     if cfg.debug_amr: logger.info(amr_str)
@@ -219,6 +236,7 @@ def extract_clauses(amr_str):
 
     attribute_values = get_attribute_values(g)
     concept_values = get_concept_values(g)
+    polarities = get_polarities(g)
 
     # The list of triples that make up the graph.
 
@@ -295,44 +313,25 @@ def extract_clauses(amr_str):
 
                 # Nice-01, Good-02 (under better.01)
 
-    """
-    Merge connectives
-    
-    for idx, e in enumerate(concept_edges):
-        _target = e.target
-        if _target in concept_values.keys():
-            logger.error(_target + " " + concept_values[_target])
-            _edge = e
-            if concept_values[_target] in connectives:
-                _conn = []
-                for idx, e1 in enumerate(concept_edges):
-                    if e1.source == _target:
-                        _conn.append(e1.target)
-                logger.error(_conn)
-                concept_edges[idx] = e._replace(target=", ".join(_conn))
-    """
-
-
-
 
     """
     Replace the concept edges with value_keys
     """
-    concept_edges = replace_edges_value_keys(concept_edges, concept_values)
+
+    concept_edges = replace_edges_value_keys(concept_edges, concept_values, polarities)
 
     if cfg.debug_edge_replacements:
         logger.info("Replaced Edge source and target with values from `concept_values`")
         logger.debug(f"concept_edges: {pprint.pformat(concept_edges)}")
 
     clauses = []
+
     for e in concept_edges:
         clauses.append([e.role, e.source, e.target])
-
-
-
+        # clauses.append([e.source, e.role, e.target])
 
     """
-    Simple connectives (example 10)
+    Simple connectives (See example 10)
     """
     for _conn in connectives:
         parent = find_from_clauses(clauses, target=_conn)
@@ -367,6 +366,12 @@ def extract_clauses(amr_str):
                 cl[2] = "$" + _conn
                 cl.append(_values)
     """
+
+    # Reorder clauses
+    clauses_prev = clauses
+    clauses = []
+    for cl in clauses_prev:
+        clauses.append([cl[1], cl[0], cl[2]])
 
 
     if cfg.debug_clauses:
@@ -403,6 +408,7 @@ def debug_graph(amr_str):
 
 
 
+
 if __name__ == "__main__":
     # Connectives: 2, 10, 11
     # AMR roles: 3
@@ -411,12 +417,13 @@ if __name__ == "__main__":
     # FairytaleQA: 14
     # Done: Have org-role-91 resolves, but not 'have-rel-role-91' 3/19
 
-    amr, label = get_example_snt(15)
+    amr, label = get_example_snt(19)
     logger.info(label)
 
     # debug_graph(amr)
 
     simpl = extract_clauses(amr)
+    pprint.pprint(simpl)
 
     # snt
     # triples

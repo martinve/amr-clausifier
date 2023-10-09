@@ -36,7 +36,7 @@ amr_dict = {
     ":location": "located", # "isLocatedAt",
     "have-org-role-91": "role", # "hasRole"
     "have-rel-role-91": "role",
-    ":name": "hasName",
+    ":name": "name",
     ":instrument": "instrument",
     ":quant": "$count"
 }

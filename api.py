@@ -17,7 +17,7 @@ def fetch_parse_from_server(input_text):
 
         json_data = req.json()
     except Exception as e:
-        print("Cannot connect to parse server at: ", config.server_uri)
+        print("Cannot connect to parse gui at: ", config.server_uri)
         print(e)
         print("Exiting.")
         sys.exit(-1)
