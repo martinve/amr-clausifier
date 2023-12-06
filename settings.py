@@ -12,7 +12,7 @@ host = "127.0.0.1"
 
 amr_server_port = 9003
 amr_server_host = "localhost"
-amr_parse_model = "model_parse_xfm_bart_large_wiki" # "model_parse_xfm"
+amr_parse_model = "model_parse_xfm_bart_large_wiki-v1_0_0" # "model_parse_xfm"
 amr_multi_sent = True
 
 ud_server_port = 9004
