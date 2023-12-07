@@ -7,5 +7,4 @@ __pycache__/
 cache/*.json
 cache/*.sqlite-journal
 /amr_parser/models/model_stog/*
-/amr_parser/models/model_gtos/*
-/documentation/
+/amr_parser/m

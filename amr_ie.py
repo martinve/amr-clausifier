@@ -135,7 +135,7 @@ if __name__ == "__main__":
    """
 
     amrstr = """
-    # ::snt John eats soup with a spoon and sausage with knife and fork.
+    # ::snt John eats soup with  a spoon and sausage with knife and fork.
     (e / eat-01
       :ARG0 (p / person
             :name (n / name
