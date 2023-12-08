@@ -5,7 +5,7 @@ from xml.etree import ElementTree
 import csv
 from nltk.corpus import treebank, LazyCorpusLoader
 from nltk.corpus.reader.propbank import PropbankCorpusReader
-from texttable import Texttable
+
 
 # see: https://sites.pitt.edu/~naraehan/ling1330/lecture23_PropBank_in_NLTK.html
 
@@ -89,20 +89,6 @@ def describe(roleset_id, do_print=False, examples=False):
         rows.append([key, thetas, descr, mod])
         roles.update({key: {"key": mod, "descr": descr}})
 
-
-    if examples:
-        print("\n=== Usage Examples ===\n")
-        k = 1
-        tbl = Texttable()
-        tbl.set_deco(Texttable.HEADER)
-        for ex in rs.findall("example"):
-            text = ex.find("text").text
-            text = text.replace("\n", "")
-            text = " ".join(text.split())
-            text = text.replace("*trace*", "")
-            text = text.strip()
-            tbl.add_row([ex.attrib["name"], str(text)])
-        print(tbl.draw())
 
     return {
         "roleset": roleset_id,
