@@ -93,7 +93,7 @@ AMR parse server must be started under `amr_parser` directory:
 
 To call the CLI application, run `extract_info.py` with passage provided as arguments, e.g. 
 
-`./extract_info.py TItanic sank in the Atlantic.`
+`./extract_info.py Titanic sank in the Atlantic.`
 
 
 
