@@ -1,4 +1,6 @@
 import pprint
+import sys
+
 import nlp
 from amrlib.alignments.faa_aligner import FAA_Aligner
 from amrlib.alignments.rbw_aligner import RBWAligner
@@ -71,31 +73,60 @@ def get_aligned_graph(sent, graph):
 
 
 
-def map_alignments(snt_text, amr_alignments, text_alignments):
+def map_alignments(snt_text, amr_alignments):
+    """
+    Align AMR graph fragments to words in a sentence.
+
+    In: sentence text, list of AMR alignments.
+    Out: A list of tokens mapped to graph fragments.
+
+    First we create a list of words t = (w, []) where w is the word and t_1 an empty list
+    Then we iterate over all AMR alignments. We get the alignment index and add
+    a graph fragment to the respective element in the word list.
+
+    """
+
     tok_words = nlp.tokenize_sentence(snt_text)
+
+    # print("Words:", tok_words)
+    # print("Alignments")
+    # pprint.pprint(amr_alignments, indent=2)
+
     word_list = []
     for w in tok_words:
         word_list.append((w, []))
 
-    print("\n aligner.map_alignments() Alignment keys:")
-    pprint.pprint(amr_alignments.keys(), indent=2)
+    # print("\n aligner.map_alignments() Alignment keys:")
+    # pprint.pprint(amr_alignments.keys(), indent=2)
 
     for k in amr_alignments.keys():
         a: penman.surface.Alignment = amr_alignments[k]
         word_idx = a.indices[0]
         word_list[word_idx] = (word_list[word_idx][0], k)
 
-    print("Word List", word_list)
+    # print("Word List")
+    # pprint.pprint(word_list, indent=2)
 
     return word_list
 
 
 def map_triples(alignment_map, triple_map):
-    for idx, word in enumerate(alignment_map):
-        if len(word[1]) == 3:
-            key = word[1][0]
-            if key in triple_map.keys():
-                alignment_map[idx] = (word[0], triple_map[key])
+    """
+    Map word-graph alignments to the values from grouped triples.
+    """
+
+    # print("Alignment map")
+    # pprint.pprint(alignment_map, indent=2)
+
+    # print("Triple map:")
+    # pprint.pprint(triple_map, indent=2)
+
+    for idx, word_tuple in enumerate(alignment_map):
+        if len(word_tuple[1]) == 0:
+            continue
+        key = word_tuple[1][0]
+        if key in triple_map.keys():
+            alignment_map[idx] = (word_tuple[0], triple_map[key])
     return alignment_map
 
 

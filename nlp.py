@@ -33,7 +33,9 @@ def get_verb_phrases(doc):
 
 
 def tokenize_sentence(snt_text, debug=False):
-    words = snt_text.split(" ")
+    doc = nlp(snt_text)
+    words = [tok.text for tok in doc]
+
     word_list = []
     for idx, word in enumerate(words):
         word_list.append((idx, word))

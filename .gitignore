@@ -8,3 +8,4 @@ cache/*.json
 cache/*.sqlite-journal
 /amr_parser/models/model_stog/*
 /debug/
+/documentation/

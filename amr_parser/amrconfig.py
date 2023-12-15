@@ -29,29 +29,29 @@ pb_role_modifiers = {
 amr_dict_roles = {
     'have-rel-role-91': {
         'roles': {
-            ':ARG0': 'entityA',
-            ':ARG1': 'entityB',
-            ':ARG2': 'entityA_role',
-            ':ARG3': 'entityB_role',
-            ':ARG4': 'Basis'  # relationship basis (contract, case; rarely used)
+            ':ARG0': {'key': 'entityA'},
+            ':ARG1': {'key': 'entityB'},
+            ':ARG2': {'key': 'entityA_role'},
+            ':ARG3': {'key': 'entityB_role'},
+            ':ARG4': {'key': 'Basis'}  # relationship basis (contract, case; rarely used)
         }
     },
     'have-org-role-91': {
         'roles': {
-            ':ARG0': "Agent",
-            ':ARG1': 'Organization',
-            ':ARG2': 'Role',
-            ':ARG4': 'Responsibility'
+            ':ARG0': {'key': "Agent"},
+            ':ARG1': {'key': 'Organization'},
+            ':ARG2': {'key': 'Role'},
+            ':ARG4': {'key': 'Responsibility'}
         }
     },
     "have-degree-91": { # https://www.isi.edu/~ulf/amr/ontonotes-4.0-frames/have-degree-v.html
         "roles": {
-            ":ARG0": "Entity",
-            ":ARG1": "Attribute",
-            ":ARG2": "Degree",
-            ":ARG3": "Compared-to",
-            ":ARG4": "Superlative",
-            ":ARG5": "Reference"
+            ":ARG0": {'key': "Entity"},
+            ":ARG1": {'key': "Attribute"},
+            ":ARG2": {'key': "Degree"},
+            ":ARG3": {'key': "Compared-to"},
+            ":ARG4": {'key': "Superlative"},
+            ":ARG5": {'key': "Reference"}
         }
     }
 }

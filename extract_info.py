@@ -4,6 +4,7 @@ import pprint
 import sys
 import amr_parser.amrconfig as amrconf
 import propbank.propbank_api as pb
+import propbank.propbank_amr_api as pbamr
 import penman
 from penman.graph import Graph
 import debug.extract_info_test_cases as examples
@@ -95,12 +96,22 @@ def simplify_amr_triples(triples):
 
 def get_propbank_mappings(triples):
     mappings_dict = {}
+    roles = None
     for el in triples:
-        if pb.is_amr_word(el[2]) or pb.is_propbank_word(el[2]):
-            roles = describe_amr_role(el[2])
-            if roles:
-                mappings_dict[el[0]] = roles
+
+        if pb.is_amr_word(el[2]):
+            #roles = describe_amr_role(el[2])
+            roles = pbamr.describe(el[2])
+        elif pb.is_propbank_word(el[2]):
+           roles = pb.describe(el[2])
+
+        if roles:
+            mappings_dict[el[0]] = roles
+            roles = None
+
     return mappings_dict
+
+
 
 
 def get_ner_category(needle):
@@ -145,7 +156,8 @@ def apply_propbank_mappings(triples, propbank_mappings):
             continue
         if "roles" in propbank_mappings[it[0]].keys():
             if it[1] in propbank_mappings[it[0]]["roles"].keys():
-                triples[idx] = (it[0], propbank_mappings[it[0]]["roles"][it[1]]["key"], it[2])
+                newrole = propbank_mappings[it[0]]["roles"][it[1]]["key"]
+                triples[idx] = (it[0], newrole, it[2])
 
 
     return triples
@@ -179,10 +191,25 @@ def sort_triples(triples, top):
 
 
 def replace_triples(triple_map, value_map):
+
+    print("TM")
+    pprint.pprint(triple_map, indent=2)
+
+    print("VM", value_map)
+    pprint.pprint(value_map, indent=2)
+
+    tm_ = triple_map
+
     for key in triple_map.keys():
         for idx, val in enumerate(triple_map[key]):
             if val[1] in value_map.keys():
                 triple_map[key][idx] = (val[0], value_map[val[1]])
+
+    print("RM")
+    pprint.pprint(triple_map, indent=2)
+
+    print(triple_map == tm_)
+
     return triple_map
 
 
@@ -225,7 +252,8 @@ def triple_map_annotate_propbank(triple_map, propbank_mappings):
             value_map = []
             for pbkey in values.keys():
                 elem = values[pbkey]
-                value_map.append({elem["key"]: elem["descr"]})
+                if "descr" in elem.keys():
+                    value_map.append({elem["key"]: elem["descr"]})
             pb_values = json.dumps(value_map)
             pb_values = pb_values.replace('\"', "'")
             # triple_map[key].append(("propbank", pb_values))
@@ -245,14 +273,15 @@ def decompose_amr(amrstr):
 
     triples = simplify_amr_triples(g.triples)
 
-    graph_new = graph_encode_snt(triples, snt_text)
+    amr_new = graph_encode_snt(triples, snt_text)
+    g = penman.decode(amr_new)
 
     print("Simplified Graph")
-    print(graph_new, '\n')
+    print(amr_new, '\n')
 
     # amr_alignments, text_alignments = aligner.get_alignments(snt_text, graph_new, debug=True)
     # amr_alignments, text_alignments = aligner.get_alignments_faa(snt_text, graph_new, debug=True)
-    amr_alignments, text_alignments = aligner.get_alignments_rbw(snt_text, graph_new, debug=True)
+    amr_alignments, text_alignments = aligner.get_alignments_rbw(snt_text, amr_new, debug=True)
 
     print("Alignments:")
     pprint.pprint(amr_alignments)
@@ -270,13 +299,14 @@ def decompose_amr(amrstr):
 
     triples = map_ner_types(triples)
 
-    variable_map = get_variable_map(triples)
+    ## variable_map = get_variable_map(triples)
+    import amr_ie as ie
+    variable_map = ie.map_concept_attribute_values(g)
 
     print("\nVariable map:")
     pprint.pprint(variable_map, indent=2)
 
     triples = apply_variable_map(triples, variable_map)
-
 
     triples = sort_triples(triples, g.top)
     print("\nSorted Triples:")
@@ -299,17 +329,9 @@ def decompose_amr(amrstr):
         val = t[2].replace('"', "")
         triple_map[idx].append((key,val))
 
-
     triple_map = triple_map_add_roles(triple_map)
     triple_map = triple_map_annotate_propbank(triple_map, propbank_mappings)
 
-    value_map = {}
-    for idx in list(triple_map):
-        if len(triple_map[idx]) == 1:
-            el = triple_map.pop(idx)[0]
-            value_map[idx] = el[1]
-
-    replace_triples(triple_map, value_map)
     print("\nGrouped Triples:")
     pprint.pprint(triple_map)
 
@@ -317,11 +339,15 @@ def decompose_amr(amrstr):
     print("\nNP/VP spans:")
     pprint.pprint(spans)
 
-    alignment_map = aligner.map_alignments(snt_text, amr_alignments, text_alignments)
+    # removed text alignments from arguments, check logic
+    alignment_map = aligner.map_alignments(snt_text, amr_alignments)
     print("\nAlignment Map:")
     pprint.pprint(alignment_map, indent=2)
 
     print("\nTriple map")
+    pprint.pprint(triple_map, indent=2)
+    print(">>>")
+    triple_map = replace_triples(triple_map, variable_map)
     pprint.pprint(triple_map, indent=2)
     print("---")
 

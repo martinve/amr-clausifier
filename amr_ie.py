@@ -19,7 +19,9 @@ db = Session()
 
 
 
-def debug_print(var):
+def debug_print(var, comment=False):
+    if comment:
+        print(comment)
     pprint.pprint(var)
     print("---")
 
@@ -30,7 +32,10 @@ def db_get_amr(snt_id):
     return sent.parse_amr
 
 
-def map_concept_attribute_values(cv, av):
+def map_concept_attribute_values(g):
+    av = cl.get_attribute_values(g)
+    cv = cl.get_concept_values(g)
+
     mv = {}
     for k in cv.keys():
         if k in av.keys():
@@ -39,10 +44,6 @@ def map_concept_attribute_values(cv, av):
             mv[k] = cv[k]
     return mv
 
-
-def get_amr_types(g):
-    for t in g.triples:
-        print(t)
 
 def get_wiki_list(g):
     wikiattr = g.attributes(role=':wiki')
@@ -61,16 +62,14 @@ def decompose_snt(amr):
 
     debug_print(amr)
 
-    debug_print(get_amr_types(g))
-
     cv = cl.get_concept_values(g)
-    debug_print(cv, "Values")
+    debug_print(cv, "Concept Values:")
 
     av = cl.get_attribute_values(g)
-    deb
+    debug_print(av, "Attribute Values:")
 
-    mv = map_concept_attribute_values(cv, av)
-    debug_print(mv)
+    mv = map_concept_attribute_values(g)
+    debug_print(mv, "Concept-Attribute Value Map")
 
     # ce = cl.get_concept_edges(g, cv, av)
     # pprint.pprint(ce)
@@ -97,17 +96,16 @@ def decompose_snt(amr):
 if __name__ == "__main__":
 
     amrstr0 = """
-    # ::snt Barack Obama was born in Hawaii .
-    (b / bear-02
-      :ARG1 (p / person
+# ::snt Barack Obama was born in Hawaii.
+(b / bear-02
+   :ARG1 (p / person
             :wiki "Barack_Obama"
-            :name (n / name
-                  :op1 "Barack"
-                  :op2 "Obama"))
-      :location (s / state
-            :wiki "Hawaii"
-            :name (n2 / name
-                  :op1 "Hawaii")))
+            :name Barack_Obama)
+   :location (s / state
+                :wiki "Hawaii"
+                :name Hawaii)) 
+
+
     """
 
     amrstr1 = """
@@ -148,8 +146,36 @@ if __name__ == "__main__":
             :op1 (k / knife)
             :op2 (f / fork)))"""
 
+    amrstr = """
+    # ::snt The colors for flag of Estonia are blue, black and white.
+(c / color
+   :domain (a / and
+              :op1 (b / blue)
+              :op2 (b2 / black-04)
+              :op3 (w / white))
+   :purpose (f / flag
+               :poss (c2 / country
+                         :wiki "Estonia"
+                         :name Estonia))) 
 
-    amrstr = amrstr
+
+    """
+
+    amrstr = """
+    # ::snt Titanic sank in the Atlantic in 1912.
+(s / sink-01
+   :ARG1 (s2 / ship
+             :wiki "RMS_Titanic"
+             :name Titanic)
+   :location (o / ocean
+                :wiki "Atlantic_Ocean"
+                :name Atlantic)
+   :time (d / date-entity
+            :year 1912)) 
+
+"""
+
+    amrstr = amrstr1
     extracted = decompose_snt(amrstr)
 
     print("EXTRACTED:")

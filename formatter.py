@@ -1,7 +1,7 @@
 import json
 
 
-def tuple_to_dict(tuples):
+def tuples_to_dict(tuples):
     tupledict = {}
     for el in tuples:
         if len(el) == 2:
@@ -11,11 +11,23 @@ def tuple_to_dict(tuples):
 def get_sentence(triple_map):
     tok_list = []
     for tok in triple_map:
-        tok_list.append(tok[0])
-        if len(tok[1]) > 0:
-            info = tuple_to_dict(tok[1])
-            if len(info):
-                annotation = json.dumps(info)
-                tok_list.append(annotation)
+        word = tok[0]
+        info = tok[1] # list[tuple]
+        tok_list.append(word)
+
+        if len(info) == 0:
+            continue
+
+        # infodict = tuples_to_dict(info)
+        # print(info)
+        infodict = {}
+        for t in info:
+            if t[0] == "instance" and t[1] == word:
+                continue
+            infodict[t[0]] = t[1]
+
+        if len(infodict) > 0:
+            annotation = json.dumps(infodict)
+            tok_list.append(annotation)
 
     return " ".join(tok_list)

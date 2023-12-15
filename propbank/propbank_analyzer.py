@@ -5,6 +5,7 @@ import csv
 import nltk
 from xml.etree import ElementTree as ET
 
+import propbank_amr_api as pbamr
 
 def extract_propbank_frames():
     framedir = nltk.data.path[0] + "/corpora/propbank-3.4/frames"
@@ -90,8 +91,13 @@ def get_propbank_label_summary():
                 k += 1
 
 
+
+def get_amr_elem(key):
+    pbamr.describe(key)
+
 if __name__ == "__main__":
     # extract_propbank_frames()
     # get_propbank_args_summary()
-    get_propbank_label_summary()
+    # get_propbank_label_summary()
     # print("Done", k)
+    get_amr_elem("have-org-role-91")

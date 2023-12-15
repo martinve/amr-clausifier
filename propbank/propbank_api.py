@@ -60,7 +60,10 @@ def describe(roleset_id, do_print=False, examples=False):
         # print(f"No PropBank role found for {roleset_id}")
         return {}
 
+    return extract_data(rs, roleset_id)
 
+
+def extract_data(rs, roleset_id):
     roles = {}
     rows = []
 
@@ -91,7 +94,6 @@ def describe(roleset_id, do_print=False, examples=False):
 
         rows.append([key, thetas, descr, mod])
         roles.update({key: {"key": mod, "descr": descr}})
-
 
     return {
         "roleset": roleset_id,
