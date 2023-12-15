@@ -138,16 +138,13 @@ def map_ner_types(triples):
             continue
         category = get_ner_category(it[2])
         if category:
-            debugs.append(["Category:", it[2], category, it[0]])
+            debugs.append(["cat", it[2], category, it[0]])
             triples.remove(triples[idx])
             # triples[idx] = (it[0], category, it[2])
             triples.append((it[0], "type", it[2]))
-            triples.append((it[0], "category", category))
+            triples.append((it[0], "cat", category))
 
-    print("NER mappings:")
-    print(debugs)
-
-    return triples
+    return triples, debugs
 
 
 def apply_propbank_mappings(triples, propbank_mappings):
@@ -279,27 +276,20 @@ def decompose_amr(amrstr):
     print("Simplified Graph")
     print(amr_new, '\n')
 
-    # amr_alignments, text_alignments = aligner.get_alignments(snt_text, graph_new, debug=True)
-    # amr_alignments, text_alignments = aligner.get_alignments_faa(snt_text, graph_new, debug=True)
     amr_alignments, text_alignments = aligner.get_alignments_rbw(snt_text, amr_new, debug=True)
 
     print("Alignments:")
     pprint.pprint(amr_alignments)
     pprint.pprint(text_alignments)
 
-    # nlp.tokenize_sentence(snt_text, debug=True)
-    # nlp.tokenize_sentence_lemmas(snt_text, debug=True)
-
-
     propbank_mappings = get_propbank_mappings(triples)
-    print("\nPropbank mappings:")
+    print("Propbank mappings:")
     pprint.pprint(propbank_mappings)
 
     triples = apply_propbank_mappings(triples, propbank_mappings)
 
     triples = map_ner_types(triples)
 
-    ## variable_map = get_variable_map(triples)
     import amr_ie as ie
     variable_map = ie.map_concept_attribute_values(g)
 
@@ -349,7 +339,7 @@ def decompose_amr(amrstr):
     print(">>>")
     triple_map = replace_triples(triple_map, variable_map)
     pprint.pprint(triple_map, indent=2)
-    print("---")
+    print("<<<")
 
     alignment_triple_map = aligner.map_triples(alignment_map, triple_map)
 
@@ -376,5 +366,18 @@ if __name__ == "__main__":
         decompose_amr(_amr)
 
     snt = " ".join(snt)
-    amr = get_amr_parse(snt)
+    # amr = get_amr_parse(snt)
+    amr = '''
+    # ::snt Titanic sank in the Atlantic.
+(s / sink-01
+      :ARG1 (s2 / ship
+            :wiki "RMS_Titanic"
+            :name (n / name
+                  :op1 "Titanic"))
+      :location (o / ocean
+            :wiki "Atlantic_Ocean"
+            :name (n2 / name
+                  :op1 "Atlantic"))) 
+'''
+
     decompose_amr(amr)

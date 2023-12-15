@@ -34,21 +34,17 @@ def get_attribute_values(g):
     attr_value_map = {}
 
     for val in g.attributes():
+        if val.role == ':wiki':
+            continue
         target = val.target.replace('"', "")
-        if val.source in attr_value_map.keys():
-            attr_value_map[val.source].append(target)
-        else:
-            attr_value_map[val.source] = [target]
-
-    print("AVM0")
-    pprint.pprint(attr_value_map)
+        if val.source not in attr_value_map.keys():
+            attr_value_map[val.source] = []
+        attr_value_map[val.source].append(target)
 
     for val in attr_value_map.keys():
         values = list(set(attr_value_map[val]))
-        print(values)
-        minlen = len(min(values, key=len))
-        shortest = [word for word in values if len(word) == minlen]
-        print(shortest)
+        # minlen = len(min(values, key=len))
+        # shortest = [word for word in values if len(word) == minlen]
 
         attr_value_map[val] = "_".join(values)
 
@@ -56,9 +52,6 @@ def get_attribute_values(g):
         logger.info("Create attribute key-value map")
         logger.debug(f"g.attributes(): {g.attributes()}")
         logger.debug(f"attribute_values: {attr_value_map}")
-
-    print("AVM1")
-    pprint.pprint(attr_value_map)
 
     return attr_value_map
 

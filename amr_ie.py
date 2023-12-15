@@ -35,7 +35,6 @@ def db_get_amr(snt_id):
 def map_concept_attribute_values(g):
     av = cl.get_attribute_values(g)
     cv = cl.get_concept_values(g)
-
     mv = {}
     for k in cv.keys():
         if k in av.keys():
