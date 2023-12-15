@@ -58,6 +58,12 @@ Clone propbank version 3.4 under NLTK data:
 cd <nltk.data.path>/corpora
 git clone git@github.com:propbank/propbank-frames.git propbank-3.4
 ```
+**Note:** You need to remove duplicate tag `</example>` from line 5684 from 
+file `AMR-UMR-91-rolesets.xml` until the pull request https://github.
+com/propbank/propbank-frames/pull/17/commits
+/7ea8ab156f4213a39cdb2cc2285f65868744afbf has been merged to main branch of 
+https://github.com/propbank/propbank-frames repository
+
 
 ## Adding additional language resources
 
