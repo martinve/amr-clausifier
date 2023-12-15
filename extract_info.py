@@ -144,7 +144,7 @@ def map_ner_types(triples):
             triples.append((it[0], "type", it[2]))
             triples.append((it[0], "cat", category))
 
-    return triples, debugs
+    return triples
 
 
 def apply_propbank_mappings(triples, propbank_mappings):
@@ -288,6 +288,8 @@ def decompose_amr(amrstr):
 
     triples = apply_propbank_mappings(triples, propbank_mappings)
 
+    print("T0", type(triples))
+
     triples = map_ner_types(triples)
 
     import amr_ie as ie
@@ -296,7 +298,7 @@ def decompose_amr(amrstr):
     print("\nVariable map:")
     pprint.pprint(variable_map, indent=2)
 
-    triples = apply_variable_map(triples, variable_map)
+    # triples = apply_variable_map(triples, variable_map)
 
     triples = sort_triples(triples, g.top)
     print("\nSorted Triples:")
@@ -365,19 +367,7 @@ if __name__ == "__main__":
         _amr = examples.amr4  # test_case
         decompose_amr(_amr)
 
-    snt = " ".join(snt)
-    # amr = get_amr_parse(snt)
-    amr = '''
-    # ::snt Titanic sank in the Atlantic.
-(s / sink-01
-      :ARG1 (s2 / ship
-            :wiki "RMS_Titanic"
-            :name (n / name
-                  :op1 "Titanic"))
-      :location (o / ocean
-            :wiki "Atlantic_Ocean"
-            :name (n2 / name
-                  :op1 "Atlantic"))) 
-'''
 
+    snt = " ".join(snt)
+    amr = get_amr_parse(snt)
     decompose_amr(amr)
