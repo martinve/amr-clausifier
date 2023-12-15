@@ -79,5 +79,29 @@ amr5 = """
             :year 1912))
 """
 
+amr6 = """
+# ::snt Barack Obama was born in Hawaii.
+(b / bear-02
+      :ARG1 (p / person
+            :wiki "Barack_Obama"
+            :name (n / name
+                  :op1 "Barack"
+                  :op2 "Obama"))
+      :location (s / state
+            :wiki "Hawaii"
+            :name (n2 / name
+                  :op1 "Hawaii"))) 
+"""
+
+amr7 = """
+# ::snt Barack Obama was born in Hawaii.
+(b / bear-02
+   :ARG1 (p / person
+            :wiki "Barack_Obama"
+            :name Barack_Obama)
+   :location (s / state
+                :wiki "Hawaii"
+                :name Hawaii)) 
+"""
 
 test_case = amr5

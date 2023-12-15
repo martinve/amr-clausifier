@@ -15,6 +15,7 @@ def get_sentence(triple_map):
         if len(tok[1]) > 0:
             info = tuple_to_dict(tok[1])
             if len(info):
-                tok_list.append("{" + json.dumps(info) + "}")
+                annotation = json.dumps(info)
+                tok_list.append(annotation)
 
     return " ".join(tok_list)

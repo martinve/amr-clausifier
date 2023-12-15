@@ -40,6 +40,9 @@ def is_amr_word(word):
     return '-91' == word[-3:]
 
 
+def get_role_labels():
+    return acfg.pb_role_modifiers.values()
+
 def _prepare_propbank_word(word):
     word = ".".join(word.rsplit("-", 1))
     word = word.replace("-", "_")

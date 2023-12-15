@@ -1,12 +1,36 @@
-import sys
 import pprint
-from collections import OrderedDict
+import nlp
 from amrlib.alignments.faa_aligner import FAA_Aligner
+from amrlib.alignments.rbw_aligner import RBWAligner
+from amrlib.graph_processing.annotator import add_lemmas
 import penman
 
-aligner = FAA_Aligner()
 
-def get_alignments(sent, amr_graph, debug=False):
+
+
+def get_alignments_rbw(sent, amr_graph, debug=False):
+    penman_graph = add_lemmas(amr_graph, snt_key='snt')
+    aligner = RBWAligner.from_penman_w_json(penman_graph)
+    graph_string = aligner.get_graph_string()
+
+    g = penman.decode(graph_string)
+    alignment_strings = g.metadata['alignments']
+
+    # print("RBW_align")
+    # print("Alignments:", len(a.split()), ":", a)
+    # print(graph_string)
+
+    amr_alignments = penman.surface.alignments(g)
+    role_alignments = penman.surface.role_alignments(g)
+
+    text_alignments = alignment_strings.strip().split(" ")
+
+    return amr_alignments, text_alignments
+
+
+def get_alignments_faa(sent, amr_graph, debug=False):
+    aligner = FAA_Aligner()
+
     sents = [sent]
     graph_strings = [amr_graph]
     amr_surface_aligns, alignment_strings = aligner.align_sents(sents, graph_strings)
@@ -36,23 +60,32 @@ def get_alignments(sent, amr_graph, debug=False):
 
 
 
+def get_alignments(sent, amr_graph, debug=False):
+    return get_alignments_rbw(sent, amr_graph, debug)
+
+
+
+
 def get_aligned_graph(sent, graph):
     pass
 
 
 
 def map_alignments(snt_text, amr_alignments, text_alignments):
-    tok_words = tokenize_sentence(snt_text)
+    tok_words = nlp.tokenize_sentence(snt_text)
     word_list = []
     for w in tok_words:
         word_list.append((w, []))
 
-    print("Alignment keys", amr_alignments.keys())
+    print("\n aligner.map_alignments() Alignment keys:")
+    pprint.pprint(amr_alignments.keys(), indent=2)
 
     for k in amr_alignments.keys():
         a: penman.surface.Alignment = amr_alignments[k]
         word_idx = a.indices[0]
         word_list[word_idx] = (word_list[word_idx][0], k)
+
+    print("Word List", word_list)
 
     return word_list
 
@@ -66,11 +99,3 @@ def map_triples(alignment_map, triple_map):
     return alignment_map
 
 
-def tokenize_sentence(snt_text, debug=False):
-    words = snt_text.split(" ")
-    if debug:
-        words_list = []
-        for idx, word in enumerate(words):
-            words_list.append((idx, word))
-        print(words_list)
-    return words

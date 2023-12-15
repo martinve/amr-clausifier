@@ -9,6 +9,8 @@ from penman.graph import Graph
 import debug.extract_info_test_cases as examples
 import aligner
 import formatter
+import nlp
+import json
 
 from gui.unified_parser import get_amr_parse
 
@@ -37,6 +39,9 @@ def get_propbank_word(pbword):
     pprint.pprint(res)
 
 
+
+
+
 def filter_triples(triples, source=None,role=None,target=None):
     if source is role is target is None:
         return triples
@@ -57,7 +62,13 @@ def remove_triples(triples, sub):
 
 
 def simplify_amr_triples(triples):
+    """
+    Perform simplification of AMR triples:
+    - remove empty Wiki tags
+    - merge name variables and map them directly to concept
+    """
 
+    # Merge :name variables, remove unneeded steps
     namevars = filter_triples(triples, role=":name")
     for idx, it in enumerate(namevars):
         triples.remove(it)
@@ -68,6 +79,11 @@ def simplify_amr_triples(triples):
         for el in sub:
             triples.remove(el)
         triples.append((it[0], it[1], "_".join(namelist)))
+
+    # remove empty wikipedia links
+    empty_wikis = filter_triples(triples, role=":wiki", target="-")
+    for it in empty_wikis:
+        triples.remove(it)
 
     connectives = filter_triples(triples, role=":instance", target='and')
     for conn in connectives:
@@ -80,10 +96,10 @@ def simplify_amr_triples(triples):
 def get_propbank_mappings(triples):
     mappings_dict = {}
     for el in triples:
-        if pb.is_amr_word(el[2]):
-            mappings_dict[el[0]] = describe_amr_role(el[2])
-        elif pb.is_propbank_word(el[2]):
-           mappings_dict[el[0]] = pb.describe(el[2])
+        if pb.is_amr_word(el[2]) or pb.is_propbank_word(el[2]):
+            roles = describe_amr_role(el[2])
+            if roles:
+                mappings_dict[el[0]] = roles
     return mappings_dict
 
 
@@ -115,7 +131,7 @@ def map_ner_types(triples):
             triples.remove(triples[idx])
             # triples[idx] = (it[0], category, it[2])
             triples.append((it[0], "type", it[2]))
-            triples.append((it[0], "parent", category))
+            triples.append((it[0], "category", category))
 
     print("NER mappings:")
     print(debugs)
@@ -169,6 +185,53 @@ def replace_triples(triple_map, value_map):
                 triple_map[key][idx] = (val[0], value_map[val[1]])
     return triple_map
 
+
+def triple_map_add_roles(triple_map):
+    """
+    Clean up roles for triples
+    """
+    new_map = {}
+    for key in triple_map.keys():
+        if key not in new_map.keys():
+            new_map[key] = []
+        for idx, el in enumerate(triple_map[key]):
+            if el[0] in pb.get_role_labels():
+                role = el[0]
+                subject = el[1]
+                if subject not in new_map.keys():
+                    new_map[subject] = []
+                new_map[subject].append(("role", role))
+            else:
+                new_map[key].append(el)
+
+    return new_map
+
+
+def graph_encode_snt(triples, sent):
+    """
+    Encode sentence metadata to AMR graph
+    """
+    graph = Graph(triples)
+    graph.metadata["snt"] = sent
+    graph = penman.encode(graph)
+    return graph
+
+
+def triple_map_annotate_propbank(triple_map, propbank_mappings):
+    pprint.pprint(propbank_mappings)
+    for key in triple_map.keys():
+        if key in propbank_mappings.keys():
+            values = propbank_mappings[key]["roles"]
+            value_map = []
+            for pbkey in values.keys():
+                elem = values[pbkey]
+                value_map.append({elem["key"]: elem["descr"]})
+            pb_values = json.dumps(value_map)
+            pb_values = pb_values.replace('\"', "'")
+            # triple_map[key].append(("propbank", pb_values))
+
+    return triple_map
+
 def decompose_amr(amrstr):
     g = penman.decode(amrstr)
     print("Graph:")
@@ -182,20 +245,25 @@ def decompose_amr(amrstr):
 
     triples = simplify_amr_triples(g.triples)
 
-    triples_new = Graph(triples)
-    graph_new = penman.encode(triples_new)
+    graph_new = graph_encode_snt(triples, snt_text)
 
-    amr_alignments, text_alignments = aligner.get_alignments(snt_text, graph_new, debug=True)
+    print("Simplified Graph")
+    print(graph_new, '\n')
+
+    # amr_alignments, text_alignments = aligner.get_alignments(snt_text, graph_new, debug=True)
+    # amr_alignments, text_alignments = aligner.get_alignments_faa(snt_text, graph_new, debug=True)
+    amr_alignments, text_alignments = aligner.get_alignments_rbw(snt_text, graph_new, debug=True)
 
     print("Alignments:")
     pprint.pprint(amr_alignments)
     pprint.pprint(text_alignments)
-    aligner.tokenize_sentence(snt_text, debug=True)
 
+    # nlp.tokenize_sentence(snt_text, debug=True)
+    # nlp.tokenize_sentence_lemmas(snt_text, debug=True)
 
 
     propbank_mappings = get_propbank_mappings(triples)
-    print("Propbank mappings:")
+    print("\nPropbank mappings:")
     pprint.pprint(propbank_mappings)
 
     triples = apply_propbank_mappings(triples, propbank_mappings)
@@ -223,13 +291,17 @@ def decompose_amr(amrstr):
         if idx not in triple_map.keys():
             triple_map[idx] = []
 
-        if idx == g.top:
-            if ("amr_root", "True") not in triple_map[idx]:
-                triple_map[idx].append(("amr_root", "True"))
+        # if idx == g.top:
+        #     if ("amr_root", "True") not in triple_map[idx]:
+        #        triple_map[idx].append(("amr_root", "True"))
 
         key = t[1].replace(":", "")
-        val = t[2]
+        val = t[2].replace('"', "")
         triple_map[idx].append((key,val))
+
+
+    triple_map = triple_map_add_roles(triple_map)
+    triple_map = triple_map_annotate_propbank(triple_map, propbank_mappings)
 
     value_map = {}
     for idx in list(triple_map):
@@ -241,11 +313,22 @@ def decompose_amr(amrstr):
     print("\nGrouped Triples:")
     pprint.pprint(triple_map)
 
+    spans = nlp.get_spans(snt_text)
+    print("\nNP/VP spans:")
+    pprint.pprint(spans)
+
     alignment_map = aligner.map_alignments(snt_text, amr_alignments, text_alignments)
     print("\nAlignment Map:")
-    pprint.pprint(alignment_map)
+    pprint.pprint(alignment_map, indent=2)
+
+    print("\nTriple map")
+    pprint.pprint(triple_map, indent=2)
+    print("---")
 
     alignment_triple_map = aligner.map_triples(alignment_map, triple_map)
+
+    print("\nAlignment triple map:")
+    pprint.pprint(alignment_triple_map)
 
     aligned_sent = formatter.get_sentence(alignment_triple_map)
 
@@ -265,6 +348,7 @@ if __name__ == "__main__":
     if len(snt) < 1:
         _amr = examples.amr4  # test_case
         decompose_amr(_amr)
+
     snt = " ".join(snt)
     amr = get_amr_parse(snt)
     decompose_amr(amr)
