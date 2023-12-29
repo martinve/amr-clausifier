@@ -16,9 +16,9 @@ It is recommended to create a virtual environment first: `python -m venv ./env/a
 
 Clone the repository `git clone git@github.com:martinve/amr-clausifier.git`
 
-Install the requirements `cd `
+Install the requirements `cd amr-clausifier && pip install -r requirements txt`
 
-The following dependencies are used: `penman`, `amrlib`, .. \hl[TBC]
+
 
 
 
@@ -32,32 +32,33 @@ As none of the models provided by AMRLib support wikification, we have trained `
 
 The model is available from https://cs.taltech.ee/staff/martin.verrev/model_parse_xfm_bart_large_wiki-v1_0_0.tgz
 
-`cd amr_parser/models/model_stog`
-`wget https://cs.taltech.ee/staff/martin.verrev/model_parse_xfm_bart_large_wiki-v1_0_0.tgz`
-`tar zxvf model_parse_xfm_bart_large_wiki-v1_0_0.tgz`
-
-
-### Setting up AMR aligner
-
-Current pipeline uses FAA aligner based on `fast_align` (https://github.com/clab/fast_align
-
-To install the aligner you must clone the repository and follow the instructions to build the `atool` and `fast_align` binaries
+```
+cd amr_clausifier/amr_parser/models/model_stog`
+wget https://cs.taltech.ee/staff/martin.verrev/model_parse_xfm_bart_large_wiki-v1_0_0.tgz
+tar zxvf model_parse_xfm_bart_large_wiki-v1_0_0.tgz
+```
 
 
 ## Adding propbank 3.4 support
 
-As only propbank 1.0 is used we 
+As only Propbank 1.0 is used natively with NLTK package, we need to add 
+Propbank 3.4 support manually.
+
+First step is to find the NLTK data path (default: `~/nltk_data`)
 
 ```
-import nltk
-print(nltk.data.path)
+python 
+>> import nltk
+>> print(nltk.data.path[0])
 ```
+
 Clone propbank version 3.4 under NLTK data:
 
 ```
 cd <nltk.data.path>/corpora
 git clone git@github.com:propbank/propbank-frames.git propbank-3.4
 ```
+
 **Note:** You need to remove duplicate tag `</example>` from line 5684 from 
 file `AMR-UMR-91-rolesets.xml` until the pull request https://github.
 com/propbank/propbank-frames/pull/17/commits
@@ -81,13 +82,14 @@ python
 
 # Running the pipeline 
 
-To run the pipeline first start the AMR server, then call the application.
-
-### Starting AMR parse server
+To run the pipeline first start the AMR server.
 
 AMR parse server must be started under `amr_parser` directory:
-`cd amr_parser`
-`./amrserver.py`
+
+```a
+cd amr_parser
+./amrserver.py
+```
 
 ### Calling the application
 
