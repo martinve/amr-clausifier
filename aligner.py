@@ -1,6 +1,4 @@
 import pprint
-import sys
-
 import nlp
 from amrlib.alignments.faa_aligner import FAA_Aligner
 from amrlib.alignments.rbw_aligner import RBWAligner
@@ -18,9 +16,10 @@ def get_alignments_rbw(sent, amr_graph, debug=False):
     g = penman.decode(graph_string)
     alignment_strings = g.metadata['alignments']
 
-    # print("RBW_align")
-    # print("Alignments:", len(a.split()), ":", a)
-    # print(graph_string)
+    debug = True
+    if debug:
+        print("RBW_align")
+        print(graph_string)
 
     amr_alignments = penman.surface.alignments(g)
     role_alignments = penman.surface.role_alignments(g)
@@ -54,8 +53,6 @@ def get_alignments_faa(sent, amr_graph, debug=False):
     print("Role alignments")
     pprint.pprint(penman.surface.role_alignments(g))
 
-
-
     text_alignments = alignment_strings.strip().split(" ")
 
     return amr_alignments, text_alignments
@@ -64,12 +61,6 @@ def get_alignments_faa(sent, amr_graph, debug=False):
 
 def get_alignments(sent, amr_graph, debug=False):
     return get_alignments_rbw(sent, amr_graph, debug)
-
-
-
-
-def get_aligned_graph(sent, graph):
-    pass
 
 
 
@@ -110,23 +101,40 @@ def map_alignments(snt_text, amr_alignments):
     return word_list
 
 
+def _tuple_remove_redundant(triples, word):
+    triples_copy = triples.copy()
+    for key, data in enumerate(triples):
+        if data[0] in ["name", "instance"] and data[1].lower() == word.lower():
+            triples_copy.pop(key)
+    return triples_copy
+
+
+
 def map_triples(alignment_map, triple_map):
     """
     Map word-graph alignments to the values from grouped triples.
     """
 
-    # print("Alignment map")
-    # pprint.pprint(alignment_map, indent=2)
-
-    # print("Triple map:")
-    # pprint.pprint(triple_map, indent=2)
-
+    alignment_map_copy = alignment_map.copy()
     for idx, word_tuple in enumerate(alignment_map):
         if len(word_tuple[1]) == 0:
             continue
-        key = word_tuple[1][0]
-        if key in triple_map.keys():
-            alignment_map[idx] = (word_tuple[0], triple_map[key])
-    return alignment_map
+        word = word_tuple[0]
+        map_key = word_tuple[1][0]
+        if map_key in triple_map.keys():
+            triples = triple_map[map_key]
+            triples = _tuple_remove_redundant(triples, word)
+            alignment_map_copy[idx] = (word_tuple[0], triples)
+
+    print("Alignment map")
+    pprint.pprint(alignment_map, indent=2)
+
+    print("Triple map:")
+    pprint.pprint(triple_map, indent=2)
+
+    print("Aligned triples:")
+    pprint.pprint(alignment_map_copy, indent=2)
+
+    return alignment_map_copy
 
 
