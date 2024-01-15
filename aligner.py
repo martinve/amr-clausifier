@@ -126,15 +126,6 @@ def map_triples(alignment_map, triple_map):
             triples = _tuple_remove_redundant(triples, word)
             alignment_map_copy[idx] = (word_tuple[0], triples)
 
-    print("Alignment map")
-    pprint.pprint(alignment_map, indent=2)
-
-    print("Triple map:")
-    pprint.pprint(triple_map, indent=2)
-
-    print("Aligned triples:")
-    pprint.pprint(alignment_map_copy, indent=2)
-
     return alignment_map_copy
 
 
