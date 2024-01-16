@@ -34,8 +34,9 @@ def get_attribute_values(g):
     attr_value_map = {}
 
     for val in g.attributes():
-        if val.role == ':wiki':
+        if val.role in [':wiki', ':polarity']:
             continue
+
         target = val.target.replace('"', "")
         if val.source not in attr_value_map.keys():
             attr_value_map[val.source] = []
@@ -65,7 +66,8 @@ def get_concept_values(g):
         _target = c.target
         if _target in concept_values.values():
             if not pb.is_propbank_word(c.target):
-                _target = f"{c.target}{_k}"
+                # _target = f"{c.target}{_k}"
+                _target = c.target
                 _k += 1
         concept_values.update({c.source: _target})
 
