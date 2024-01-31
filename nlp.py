@@ -2,6 +2,7 @@ import spacy
 from spacy.matcher import Matcher
 
 nlp = spacy.load("en_core_web_sm")
+
 matcher = Matcher(nlp.vocab)
 pattern_ = [{'POS': 'VERB', 'OP': '?'},
            {'POS': 'ADV', 'OP': '*'},
@@ -15,8 +16,10 @@ matcher.add("verb-phrases", pattern)
 def get_noun_phrases(doc):
     spans = []
     for chunk in doc.noun_chunks:
-        print("NP:", chunk.text, (chunk.start, chunk.end - 1))
+        # print("NP:", chunk.text, (chunk.start, chunk.end - 1))
         # print(chunk.text, chunk.root.text, chunk.root.dep_, chunk.root.head.text)
+        if chunk.start == chunk.end:
+            continue
         spans.append([chunk.text, (chunk.start, chunk.end - 1)])
     return spans
 
@@ -54,6 +57,7 @@ def tokenize_sentence_lemmas(snt_text, debug=False):
     if debug:
         print(word_list)
     return words
+
 
 
 def get_spans(snt_text):

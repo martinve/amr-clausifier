@@ -74,6 +74,9 @@ Additional language resources are needed for postprocessing text:
 python -m spacy download en_core_web_sm
 
 python 
+
+
+
 >> import stanza
 >> stanza.download("en")
 ```

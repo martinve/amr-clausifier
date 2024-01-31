@@ -21,10 +21,10 @@ def _transform_predicate(descr, key):
 
 
 
-    if words[0] in ["start", "end", 'description', "degree", "unit", "period", "attribute", "id", 'venue', "value", "p-value", "r-squared", "deviation", "experience", "source", "zip", "state", "degree", "experience", "superlative", "lower", "upper", "radius", "confidence", "text", "center", "photographer", "range", "direction", "sound", "type", "significance", "alternative", "element", "clause", "resemble"]:
+    if words[0] in ["start",  "role", "end", 'description', "degree", "unit", "period", "attribute", "id", 'venue', "value", "p-value", "r-squared", "deviation", "experience", "source", "zip", "state", "degree", "experience", "superlative", "lower", "upper", "radius", "confidence", "text", "center", "photographer", "range", "direction", "sound", "type", "significance", "alternative", "element", "clause", "resemble"]:
         return words[0]
 
-    keys = ["event", "thing", "entity", "polarity", "interval", "category", "resemblance", "item", "quantity", "organization", "condition", "holder", "role", "referent", "threshold", "perceiver", "basis", "text", "scale", "size", "constant", "figure", "part"]
+    keys = ["event", "thing", "entity", "polarity", "interval", "category", "resemblance", "item", "quantity", "organization", "condition", "holder", "referent", "threshold", "perceiver", "basis", "text", "scale", "size", "constant", "figure", "part"]
     for key in keys:
         if key in words:
             return key
@@ -73,11 +73,7 @@ def describe(roleset_id, do_print=False, examples=False):
             role = roles[idx]
             key = role["key"]
             descr = role["descr"]
-            newkey =  _transform_predicate(descr, key)
-
-            print(f"{key} -> {newkey}")
-
-            roles[idx]["key"] = newkey
+            roles[idx]["key"] =  _transform_predicate(descr, key)
 
         data["roles"] = roles
         return data

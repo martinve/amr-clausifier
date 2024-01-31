@@ -1,4 +1,6 @@
 import pprint
+import sys
+
 import nlp
 from amrlib.alignments.faa_aligner import FAA_Aligner
 from amrlib.alignments.rbw_aligner import RBWAligner
@@ -119,12 +121,27 @@ def map_triples(alignment_map, triple_map):
     for idx, word_tuple in enumerate(alignment_map):
         if len(word_tuple[1]) == 0:
             continue
+
         word = word_tuple[0]
         map_key = word_tuple[1][0]
-        if map_key in triple_map.keys():
-            triples = triple_map[map_key]
-            triples = _tuple_remove_redundant(triples, word)
-            alignment_map_copy[idx] = (word_tuple[0], triples)
+
+        print("WM_Keys", word, map_key)
+
+        if map_key not in triple_map.keys():
+            continue
+
+        triples = triple_map[map_key]
+        triples = _tuple_remove_redundant(triples, word)
+        alignment_map_copy[idx] = (word_tuple[0], triples)
+
+    '''
+    print('===')
+    pprint.pprint(triple_map)
+    print("<<<")
+    pprint.pprint(alignment_map)
+    sys.exit(-1)
+    '''
+
 
     return alignment_map_copy
 

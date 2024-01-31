@@ -32,15 +32,23 @@ def db_get_amr(snt_id):
     return sent.parse_amr
 
 
-def map_concept_attribute_values(g):
+def get_variable_map(g):
+    vars = g.variables()
     av = cl.get_attribute_values(g)
     cv = cl.get_concept_values(g)
+
+    print("Vars", vars)
+    print("AV", av)
+    print("CV", cv)
+
     mv = {}
     for k in cv.keys():
-        if k in av.keys():
-            mv[k] = av[k]
-        else:
+        if k not in vars:
+            continue
+        if k not in av.keys():
             mv[k] = cv[k]
+        else:
+            mv[k] = av[k]
     return mv
 
 
@@ -67,7 +75,7 @@ def decompose_snt(amr):
     av = cl.get_attribute_values(g)
     debug_print(av, "Attribute Values:")
 
-    mv = map_concept_attribute_values(g)
+    mv = get_variable_map(g)
     debug_print(mv, "Concept-Attribute Value Map")
 
     # ce = cl.get_concept_edges(g, cv, av)

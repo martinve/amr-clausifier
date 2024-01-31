@@ -1,0 +1,265 @@
+ID	Frameset	Arg	Func	Descr
+1	be-destined-for.91	ARG1	PPT	entity
+2	be-destined-for.91	ARG2	GOL	destination
+3	be-from.91	ARG1	VSP	entity
+4	be-from.91	ARG2	VSP	source
+5	be-located-at.91	ARG1	PPT	entity
+6	be-located-at.91	ARG2	LOC	location
+7	be-polite.91	ARG1	VSP	entity
+8	be-polite.91	ARG2	VSP	value (typical value: +)
+9	be-temporally-at.91	ARG1	VSP	event
+10	be-temporally-at.91	ARG2	TMP	time
+11	belong.91	ARG1	VSP	possession
+12	belong.91	ARG2	VSP	possessor
+13	binding-affinity.91	ARG1	PPT	binding affinity constant measured (e.g. dissociation-constant (Kd), inhibitor-constant (Ki))
+14	binding-affinity.91	ARG2	PRD	binding affinity quantity (e.g. concentration-quantity such as '5 nanomolar')
+15	but.91	ARG1	VSP	first event
+16	but.91	ARG2	VSP	second event
+17	byline.91	ARG0	VSP	news organization
+18	byline.91	ARG1	VSP	author
+19	byline.91	ARG2	VSP	photographer, illustrator
+20	byline.91	ARG3	VSP	translator
+21	byline.91	ARG4	VSP	means
+22	cite.91	ARG1	PPT	text accompanied by a citation
+23	cite.91	ARG2	SRC	source publication (may use publication-91)
+24	correlate.91	ARG1	VSP	first item in correlation
+25	correlate.91	ARG2	VSP	second item in correlation
+26	contrast.91	ARG1	VSP	first item in comparison
+27	contrast.91	ARG2	VSP	second item in comparison
+28	course.91	ARG1	VSP	topic
+29	course.91	ARG2	VSP	number
+30	course.91	ARG3	VSP	section
+31	course.91	ARG4	VSP	institution
+32	course.91	ARG5	VSP	instructor
+33	distribution-range.91	ARG1	VSP	center, mean
+34	distribution-range.91	ARG2	VSP	lower bound
+35	distribution-range.91	ARG3	VSP	upper bound
+36	distribution-range.91	ARG4	VSP	radius, distance from center to bounds
+37	distribution-range.91	ARG5	VSP	confidence that value is in range, typically a percentage, e.g. 95%
+38	distribution-range.91	ARG6	VSP	deviation covered by range, e.g. standard-deviation, standard-error-of-the-mean
+39	distribution-range.91	ARG7	VSP	type of distribution, e.g. normal-distribution
+40	emit_sound.91	ARG1	PAG	entity emitting sound
+41	emit_sound.91	ARG2	PPT	the sound (may use (s / string-entity))
+42	exist.91	ARG1	LOC	location
+43	exist.91	ARG2	PPT	entity
+44	gesture.91	ARG0	PAG	gesturer
+45	gesture.91	ARG1	PPT	the gesture
+46	gesture.91	ARG2	GOL	audience
+47	have.91	ARG1	VSP	possessor
+48	have.91	ARG2	VSP	possession
+49	have-actor.91	ARG1	VSP	event
+50	have-actor.91	ARG2	PAG	actor
+51	have-affectee.91	ARG1	VSP	event
+52	have-affectee.91	ARG2	GOL	affectee
+53	have-age.91	ARG1	VSP	entity
+54	have-age.91	ARG2	VSP	age
+55	have-apprehensive.91	ARG1	VSP	main event
+56	have-apprehensive.91	ARG2	VSP	apprehensive event
+57	have-cause.91	ARG1	CAU	cause
+58	have-cause.91	ARG2	VSP	event
+59	have-causer.91	ARG1	VSP	event
+60	have-causer.91	ARG2	PAG	causer
+61	have-companion.91	ARG1	VSP	event
+62	have-companion.91	ARG2	VSP	accompanier
+63	have-concession.91	ARG1	VSP	main event
+64	have-concession.91	ARG2	VSP	concession
+65	have-concessive-condition.91	ARG1	VSP	main event
+66	have-concessive-condition.91	ARG2	VSP	concessive condition
+67	have-condition.91	ARG1	VSP	main event
+68	have-condition.91	ARG2	VSP	condition
+69	have-degree.91	ARG1	ADV	domain, entity characterized by attribute (e.g. girl)
+70	have-degree.91	ARG2	PPT	attribute (e.g. tall)
+71	have-degree.91	ARG3	EXT	degree itself (e.g. more, most, less, least, times, equal, enough, too, so, to-the-point, at-least)
+72	have-degree.91	ARG4	PPT	compared-to
+73	have-degree.91	ARG5	PRD	superlative, reference to superset
+74	have-degree.91	ARG6	PRD	reference, threshold of sufficiency
+75	have-degree.92	ARG1	ADJ	attribute (e.g. tall)
+76	have-degree.92	ARG2	VSP	'Intensifier', 'Downtoner', or 'Equal'
+77	have-degree-of-resemblance.91	ARG1	PPT	Thing resembling things
+78	have-degree-of-resemblance.91	ARG2	PPT	First resemblance under comparison
+79	have-degree-of-resemblance.91	ARG3	PPT	Second resemblance under comparison
+80	have-degree-of-resemblance.91	ARG4	EXT	Degree word comparing ARG2 to ARG3
+81	have-direction.91	ARG1	VSP	entity/event
+82	have-direction.91	ARG2	DIR	direction
+83	have-duration.91	ARG1	VSP	thing that lasts
+84	have-duration.91	ARG2	TMP	period of time
+85	have-example.91	ARG1	VSP	example
+86	have-example.91	ARG2	VSP	of what
+87	have-experience.91	ARG1	PAG	experiencer
+88	have-experience.91	ARG2	PPT	the experience itself
+89	have-experience.91	ARG3	CAU	stimulus
+90	have-experiencer.91	ARG1	VSP	event
+91	have-experiencer.91	ARG2	PAG	experiencer
+92	have-extent.91	ARG1	VSP	event/entity
+93	have-extent.91	ARG2	EXT	extent
+94	have-frequency.91	ARG1	PPT	entity
+95	have-frequency.91	ARG2	TMP	frequency
+96	have-force.91	ARG1	VSP	event
+97	have-force.91	ARG2	CAU	force
+98	have-goal.91	ARG1	VSP	entity in motion
+99	have-goal.91	ARG2	GOL	goal
+100	have-group.91	ARG1	VSP	members
+101	have-group.91	ARG2	VSP	group
+102	have-instrument.91	ARG1	VSP	entity
+103	have-instrument.91	ARG2	MNR	instrument
+104	have-li.91	ARG1	PPT	entity
+105	have-li.91	ARG2	VSP	list-item
+106	have-list-item.91	ARG1	PPT	entity
+107	have-list-item.91	ARG2	VSP	list-item
+108	have-manner.91	ARG1	VSP	event/entity
+109	have-manner.91	ARG2	MNR	manner
+110	have-material.91	ARG1	VSP	entity
+111	have-material.91	ARG2	VSP	material
+112	have-medium.91	ARG1	VSP	entity
+113	have-medium.91	ARG2	VSP	medium
+114	have-mod.91	ARG1	PPT	entity
+115	have-mod.91	ARG2	VSP	mod
+116	have-mode.91	ARG1	PPT	entity
+117	have-mode.91	ARG2	VSP	mode
+118	have-name.91	ARG1	VSP	entity
+119	have-name.91	ARG2	VSP	name
+120	have-ord.91	ARG1	VSP	main entity
+121	have-ord.91	ARG2	VSP	ord
+122	have-ord.91	ARG3	SRC	range in which counting has meaning
+123	have-ord.91	ARG4	SRC	start of the range
+124	have-ord.91	ARG5	DIR	direction of counting within range
+125	have-org-role.91	ARG0	VSP	office holder
+126	have-org-role.91	ARG1	VSP	organization
+127	have-org-role.91	ARG2	VSP	title of office held
+128	have-org-role.91	ARG3	VSP	description of responsibility
+129	have-org-role.92	ARG1	VSP	office holder
+130	have-org-role.92	ARG2	VSP	organization
+131	have-org-role.92	ARG3	VSP	title of office held
+132	have-org-role.92	ARG4	VSP	description of responsibility
+133	have-other-role.91	ARG1	VSP	event or entity
+134	have-other-role.91	ARG2	VSP	other role
+135	have-part.91	ARG1	VSP	main entity
+136	have-part.91	ARG2	VSP	part
+137	have-path.91	ARG1	VSP	event/entity
+138	have-path.91	ARG2	DIR	path
+139	have-place.91	ARG1	PPT	entity
+140	have-place.91	ARG2	LOC	location
+141	have-polarity.91	ARG1	VSP	entity
+142	have-polarity.91	ARG2	VSP	polarity (typical value: -)
+143	have-pure-addition.91	ARG1	VSP	first event
+144	have-pure-addition.91	ARG2	VSP	second event
+145	have-purpose.91	ARG1	VSP	event/entity
+146	have-purpose.91	ARG2	VSP	purpose
+147	have-quant.91	ARG1	PPT	entity, thing being quantified
+148	have-quant.91	ARG2	ADV	numerical quantity or quantifier; how much/ how many
+149	have-quant.91	ARG3	EXT	degree mention modifying quantity, thing quantified (e.g. more, most, less, least, times, equal, enough, too, so, to-the-point, at-least)
+150	have-quant.91	ARG4	PPT	compared-to
+151	have-quant.91	ARG5	PRD	superlative, reference to superset
+152	have-quant.91	ARG6	PRD	consequence, result of quantity
+153	have-reason.91	ARG1	VSP	reason
+154	have-reason.91	ARG2	VSP	event
+155	have-recipient.91	ARG1	VSP	event
+156	have-recipient.91	ARG2	GOL	recipient
+157	have-rel-role.91	ARG0	VSP	entity A
+158	have-rel-role.91	ARG1	VSP	entity B
+159	have-rel-role.91	ARG2	VSP	role of entity A (must be specified)
+160	have-rel-role.91	ARG3	VSP	role of entity B (often left unspecified)
+161	have-rel-role.91	ARG4	VSP	relationship basis (contract, case; rarely used)
+162	have-rel-role.92	ARG1	VSP	entity A
+163	have-rel-role.92	ARG2	VSP	entity B
+164	have-rel-role.92	ARG3	VSP	role of entity A (must be specified)
+165	have-rel-role.92	ARG4	VSP	role of entity B (often left unspecified)
+166	have-rel-role.92	ARG5	VSP	relationship basis (contract, case; rarely used)
+167	have-role.91	ARG1	VSP	first entity
+168	have-role.91	ARG2	VSP	optional second entity
+169	have-role.91	ARG3	VSP	object category for ARG1
+170	have-role.91	ARG4	VSP	optional object category for ARG2
+171	have-source.91	ARG1	VSP	entity
+172	have-source.91	ARG2	SRC	source
+173	have-start.91	ARG1	VSP	event/entity
+174	have-start.91	ARG2	VSP	start
+175	have-stimulus.91	ARG1	VSP	event
+176	have-stimulus.91	ARG2	PPT	stimulus
+177	have-subevent.91	ARG1	VSP	main event
+178	have-subevent.91	ARG2	VSP	subevent
+179	have-substitution.91	ARG1	VSP	this
+180	have-substitution.91	ARG2	VSP	instead of that
+181	have-subtraction.91	ARG1	VSP	main event
+182	have-subtraction.91	ARG2	VSP	event/entity that does not occur
+183	have-temporal.91	ARG1	VSP	event
+184	have-temporal.91	ARG2	TMP	temporal
+185	have-theme.91	ARG1	VSP	event
+186	have-theme.91	ARG2	PPT	theme
+187	have-topic.91	ARG1	VSP	entity/event
+188	have-topic.91	ARG2	VSP	topic
+189	have-undergoer.91	ARG1	VSP	event
+190	have-undergoer.91	ARG2	PPT	undergoer
+191	have-unit.91	ARG1	VSP	event
+192	have-unit.91	ARG2	VSP	unit of measurement
+193	have-value.91	ARG1	VSP	entity
+194	have-value.91	ARG2	VSP	value
+195	have-vocative.91	ARG1	VSP	proposition
+196	have-vocative.91	ARG2	VSP	vocative
+197	hyperlink.91	ARG1	PPT	text being hyperlinked
+198	hyperlink.91	ARG3	VSP	url-entity
+199	identity.91	ARG1	VSP	theme
+200	identity.91	ARG2	VSP	equated referent
+201	include.91	ARG1	VSP	subset
+202	include.91	ARG2	VSP	superset
+203	include.91	ARG3	VSP	relative size of the subset compared to superset
+204	infer.91	ARG0	PAG	entity inferring something
+205	infer.91	ARG1	PPT	inference
+206	infer.91	ARG2	DIR	source of inference
+207	instead-of.91	ARG1	VSP	this
+208	instead-of.91	ARG2	VSP	instead of that
+209	mean.91	ARG0	PAG	agent
+210	mean.91	ARG1	MNR	element containing meaning
+211	mean.91	ARG2	PPT	meaning
+212	mean.91	ARG3	GOL	perceiver, beneficiary
+213	proverb.91	ARG1	VSP	proverb
+214	proverb.91	ARG2	VSP	2nd part of a two-part allegorical exp. Gives a focused interpretation of ARG1
+215	publication.91	ARG0	VSP	author(s)
+216	publication.91	ARG1	VSP	title
+217	publication.91	ARG2	VSP	abstract
+218	publication.91	ARG3	VSP	full text
+219	publication.91	ARG4	VSP	venue (journal, conference)
+220	publication.91	ARG5	VSP	volume
+221	publication.91	ARG6	VSP	issue
+222	publication.91	ARG7	VSP	pages
+223	publication.91	ARG8	VSP	id (e.g. PubMed)
+224	publication.91	ARG9	VSP	editor(s)
+225	publication.91	ARG10	VSP	publisher
+226	publication.91	ARG11	VSP	url
+227	range.91	ARG1	SRC	start of the range
+228	range.91	ARG2	GOL	end of the range
+229	rate-entity.91	ARG1	VSP	quantity (with an implied default of 1)
+230	rate-entity.91	ARG2	VSP	per quantity
+231	rate-entity.91	ARG3	VSP	regular interval between events
+232	rate-entity.91	ARG4	VSP	entity on which recurring event happens
+233	regardless.91	ARG1	VSP	main event
+234	regardless.91	ARG2	VSP	irrelevant thing
+235	reference-illustration.91	ARG1	VSP	clause which points to an figure, table, or example
+236	reference-illustration.91	ARG2	VSP	the figure, table or example
+237	request-confirmation.91	ARG0	PAG	entity requesting confirmation
+238	request-confirmation.91	ARG1	PPT	thing to be confirmed
+239	request-confirmation.91	ARG2	GOL	entity requestion is being made to
+240	request-response.91	ARG0	PAG	entity requesting response
+241	request-response.91	ARG1	PPT	thing to be responded to
+242	request-response.91	ARG2	GOL	entity requestion is being made to
+243	resemble.91	ARG1	PPT	resembler
+244	resemble.91	ARG2	PPT	resemble what
+245	score-on-scale.91	ARG1	VSP	score
+246	score-on-scale.91	ARG2	VSP	worst score on scale
+247	score-on-scale.91	ARG3	VSP	best score on scale
+248	score-on-scale.91	ARG4	VSP	name of scale
+249	statistical-test.91	ARG1	VSP	finding
+250	statistical-test.91	ARG2	VSP	p-value (probability of null-hypothesis)
+251	statistical-test.91	ARG3	VSP	r-squared (coefficient of determination)
+252	statistical-test.91	ARG4	VSP	significance test (e.g. t-test, Chi-square test, Fisher's exact test)
+253	statistical-test.91	ARG5	VSP	alternative hypothesis (vs. ...)
+254	street-address.91	ARG1	VSP	street number
+255	street-address.91	ARG2	VSP	street
+256	street-address.91	ARG3	VSP	unit (apartment, suite, etc.)
+257	street-address.91	ARG4	VSP	city
+258	street-address.91	ARG5	VSP	state, province, district
+259	street-address.91	ARG6	VSP	zip code
+260	street-address.91	ARG7	VSP	country
+261	unexpected-co-occurrence.91	ARG1	VSP	first event
+262	unexpected-co-occurrence.91	ARG2	VSP	second event (unexpected)
+263	weather.91	ARG1	LOC	location
+264	weather.91	ARG2	VSP	environmental condition

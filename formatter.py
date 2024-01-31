@@ -9,11 +9,13 @@ def tuples_to_dict(tuples):
     return tupledict
 
 def get_sentence(triple_map):
+
     tok_list = []
     for tok in triple_map:
         word = tok[0]
         info = tok[1] # list[tuple]
         tok_list.append(word)
+
 
         if len(info) == 0:
             continue
@@ -22,8 +24,11 @@ def get_sentence(triple_map):
         # print(info)
         infodict = {}
         for t in info:
+            if len(t) != 2:
+                continue
             if t[0] == "instance" and t[1] == word:
                 continue
+
             infodict[t[0]] = t[1]
 
         if len(infodict) > 0:

@@ -51,7 +51,8 @@ def _prepare_propbank_word(word):
 def describe(roleset_id, do_print=False, examples=False):
     roleset_key = _prepare_propbank_word(roleset_id)
 
-    print("\nGet Propbank roleset:\n", "key=", roleset_key, "ID", roleset_id,"\n")
+    if do_print:
+        print("\nGet Propbank roleset:\n", "key=", roleset_key, "ID", roleset_id,"\n")
 
     try:
         pb = init_propbank()

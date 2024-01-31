@@ -5,33 +5,54 @@ import csv
 import nltk
 from xml.etree import ElementTree as ET
 
-import propbank_amr_api as pbamr
+idx = 1
 
-def extract_propbank_frames():
+def extract_amr_frames(debug=False):
+    file = nltk.data.path[0] + "/corpora/propbank-3.4/AMR-UMR-91-rolesets.xml"
+    if debug:
+        print("ID", "Frameset", "Arg", "Func", "Descr", sep='\t')
+    extract_propbank_file(file, debug)
+
+
+def extract_propbank_frames(debug=False):
     framedir = nltk.data.path[0] + "/corpora/propbank-3.4/frames"
     k = 0
+
+    if debug:
+        print("ID", "Frameset", "Arg", "Func", "Descr", sep='\t')
+
     for file in sorted(glob(framedir + "/*.xml")):
-
-        filename = os.path.basename(file)
-
-        tree = ET.parse(file)
-        root = tree.getroot()
-
-        predicates = root.findall("predicate")
-        for pred in predicates:
-            lemma = pred.attrib["lemma"]
-            rolesets = pred.findall("roleset")
-            for rs in rolesets:
-                # print(lemma, rs.attrib["id"], rs.attrib["name"])
-                roles = rs.findall("roles/role")
-                for role in roles:
-                    print(rs.attrib["id"], role.attrib["f"], role.attrib["descr"], sep="\t")
-                    # print(f"ARG{role.attrib['n']}", role.attrib["f"], role.attrib["descr"], sep="\t")
-                    k += 1
-
+        extract_propbank_file(file, debug)
+        k += 1
         if k > 100000000000000:
             break
 
+
+def extract_propbank_file(file, debug=False):
+    global idx
+
+    filename = os.path.basename(file)
+
+    tree = ET.parse(file)
+    root = tree.getroot()
+
+    rolelist = []
+
+    predicates = root.findall("predicate")
+    for pred in predicates:
+        lemma = pred.attrib["lemma"]
+        rolesets = pred.findall("roleset")
+        for rs in rolesets:
+            # print(lemma, rs.attrib["id"], rs.attrib["name"])
+            roles = rs.findall("roles/role")
+            for role in roles:
+                descr = role.attrib["descr"].replace('"', '')
+                roledata = [rs.attrib["id"], f"ARG{role.attrib['n']}", role.attrib["f"], descr]
+                rolelist.append(roledata)
+                if debug:
+                    print(idx, rs.attrib["id"], f"ARG{role.attrib['n']}", role.attrib["f"], descr, sep="\t")
+                idx += 1
+    return rolelist
 
 def get_propbank_args_summary():
 
@@ -88,16 +109,20 @@ def get_propbank_label_summary():
             descrarr = descr.split(" ")
             if len(descrarr) > 1:
                 print(k, descr)
+
                 k += 1
-
-
-
+"""
+# import propbank_amr_api as pbamr
 def get_amr_elem(key):
     pbamr.describe(key)
 
+"""
+
+
 if __name__ == "__main__":
-    # extract_propbank_frames()
+    extract_propbank_frames(True)
+    # extract_amr_frames(True)
     # get_propbank_args_summary()
     # get_propbank_label_summary()
     # print("Done", k)
-    get_amr_elem("have-org-role-91")
+    # get_amr_elem("have-org-role-91")
