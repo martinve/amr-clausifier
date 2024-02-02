@@ -28,7 +28,20 @@ def get_alignments_rbw(sent, amr_graph, debug=False):
 
     text_alignments = alignment_strings.strip().split(" ")
 
-    return amr_alignments, text_alignments
+    if bool(role_alignments):
+        print("RA", role_alignments)
+
+    return amr_alignments
+
+
+
+def alignments_to_dict(alignments):
+    alignments_dict = {}
+    for triple in alignments:
+        al: penman.surface.Alignment = alignments[triple]
+        index = al.indices[0]
+        alignments_dict[index] = triple
+    return alignments_dict
 
 
 def get_alignments_faa(sent, amr_graph, debug=False):
@@ -66,7 +79,7 @@ def get_alignments(sent, amr_graph, debug=False):
 
 
 
-def map_alignments(snt_text, amr_alignments):
+def map_alignments(snt_text, alignments_dict):
     """
     Align AMR graph fragments to words in a sentence.
 
@@ -80,30 +93,19 @@ def map_alignments(snt_text, amr_alignments):
     """
 
     tok_words = nlp.tokenize_sentence(snt_text)
-
-    # print("Words:", tok_words)
-    # print("Alignments")
-    # pprint.pprint(amr_alignments, indent=2)
-
     word_list = []
-    for w in tok_words:
-        word_list.append((w, []))
-
-    # print("\n aligner.map_alignments() Alignment keys:")
-    # pprint.pprint(amr_alignments.keys(), indent=2)
-
-    for k in amr_alignments.keys():
-        a: penman.surface.Alignment = amr_alignments[k]
-        word_idx = a.indices[0]
-        word_list[word_idx] = (word_list[word_idx][0], k)
-
-    # print("Word List")
-    # pprint.pprint(word_list, indent=2)
-
+    for idx, w in enumerate(tok_words):
+        triple = alignments_dict.get(idx, [])
+        word_list.append((w, triple))
     return word_list
 
 
+
 def _tuple_remove_redundant(triples, word):
+    """
+    Remove the triples from word where:
+        predicate is `name` or `instance` and it refers to the exact entity
+    """
     triples_copy = triples.copy()
     for key, data in enumerate(triples):
         if data[0] in ["name", "instance"] and data[1].lower() == word.lower():
@@ -125,9 +127,8 @@ def map_triples(alignment_map, triple_map):
         word = word_tuple[0]
         map_key = word_tuple[1][0]
 
-        print("WM_Keys", word, map_key)
-
         if map_key not in triple_map.keys():
+            print(f"Ignoring: word={word}, key={map_key}")
             continue
 
         triples = triple_map[map_key]
