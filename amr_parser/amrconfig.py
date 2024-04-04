@@ -20,7 +20,16 @@ pb_role_modifiers = {
     "CXN": "Construction",
     "PAG": "Agent",
     "PPT": "Patient",
-    "VSP": "Verb-specific"
+    "VSP": "Verb-specific",
+
+    "DOM": "Domain",
+    "SCL": "Scale",
+    "ANC": "Anchor",
+    "SRC": "Source",
+    "AXS": "Axis",
+    "WHL": "Whole",
+    "ANG": "Angle",
+    
 }
 
 

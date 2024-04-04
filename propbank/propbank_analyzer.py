@@ -1,11 +1,20 @@
+import setup_path
+
 import os, sys
 from glob import glob
 import csv
-
+import pprint
 import nltk
 from xml.etree import ElementTree as ET
+from amr_parser.amrconfig import pb_role_modifiers
+
+from logger import logger
+import pandas as pd
 
 idx = 1
+
+__location__ = os.path.realpath(
+    os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
 def extract_amr_frames(debug=False):
     file = nltk.data.path[0] + "/corpora/propbank-3.4/AMR-UMR-91-rolesets.xml"
@@ -56,17 +65,61 @@ def extract_propbank_file(file, debug=False):
 
 def get_propbank_args_summary():
 
-    with open("propbank_args.txt") as file:
+    debug = False
+
+    with open(os.path.join(__location__, "propbank_args.txt")) as file:
         reader = csv.reader(file, delimiter="\t")
         role_cls = {}
         for line in reader:
-            cls = line[1]
+            cls = line[1].upper()
             if cls not in role_cls.keys():
                 role_cls[cls] = 1
             else:
                 role_cls[cls] += 1
 
-    print(dict(sorted(role_cls.items(), key=lambda x:x[1], reverse=True)))
+    sorted_roles = dict(sorted(role_cls.items(), key=lambda x:x[1], reverse=True))
+
+
+
+    ## pprint.pprint(sorted_roles)
+    ## print(sorted_roles)
+    val_total = 0
+    labels_total = 0
+    err_total = 0
+    labels_mapped = 0
+
+    for key in sorted_roles.keys():
+        key = key.strip()
+        if not key:
+            continue
+
+        role_count =  sorted_roles[key]
+
+        # key = ''.join(filter(str.isalpha, key))
+        
+        label = pb_role_modifiers.get(key, None)
+        if len(key) != 3:
+            if debug:
+                logger.error("Invalid key: %s (%d)", key, role_count, sep="\t")
+                err_total += role_count
+                continue
+
+        if label is None:
+            if debug:
+                logger.error("Invalid label: %s (%d)", key, role_count, sep="\t")
+                err_total += role_count
+                continue
+
+        print(key, label, role_count, sep="\t")
+        val_total += role_count
+        labels_total += 1
+
+    # logger.info("get_propbank_arga_summary()")
+    if debug:
+        logger.info("Labels total: %d", labels_total)
+        logger.info("Labels mapped: %d", labels_mapped)
+        logger.info("Errors total: %d", err_total)
+        logger.info("Total: %d", val_total)   
 
 
 def normalize_description(descr):
@@ -120,9 +173,9 @@ def get_amr_elem(key):
 
 
 if __name__ == "__main__":
-    extract_propbank_frames(True)
+    # extract_propbank_frames(True)
     # extract_amr_frames(True)
-    # get_propbank_args_summary()
+    get_propbank_args_summary()
     # get_propbank_label_summary()
     # print("Done", k)
     # get_amr_elem("have-org-role-91")

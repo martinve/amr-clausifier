@@ -1,6 +1,5 @@
 import spacy
 import spacy_experimental
-
 from spacy.tokens import Doc
 import pandas as pd
 
@@ -67,7 +66,7 @@ if __name__ == "__main__":
     nlp = init_nlp()
 
     text = "Bill left for Paris. He arrived at noon. Peter was staying there. He was content."
-    text = "Pierre_Vinken, 61 years old, will join the board as a nonexecutive director Nov. 29. He will be happy."
+    # text = "Pierre_Vinken, 61 years old, will join the board as a nonexecutive director Nov. 29. He will be happy."
     doc = nlp(text)
     ref = resolve_references(doc)
     print(ref)

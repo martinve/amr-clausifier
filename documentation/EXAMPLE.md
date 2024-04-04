@@ -5,4 +5,3 @@ Barack Obama {"wiki": "http://..."} goes {"acttype": "single"} to a big city {"q
     "quantor": "exists,the,all"
 }
 
-N

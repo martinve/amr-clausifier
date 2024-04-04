@@ -16,7 +16,7 @@ It is recommended to create a virtual environment first: `python -m venv ./env/a
 
 Clone the repository `git clone git@github.com:martinve/amr-clausifier.git`
 
-Install the requirements `cd amr-clausifier && pip install -r requirements txt`
+Install the requirements `cd amr-clausifier && pip install -r requirements.txt`
 
 
 
@@ -33,7 +33,7 @@ As none of the models provided by AMRLib support wikification, we have trained `
 The model is available from https://cs.taltech.ee/staff/martin.verrev/model_parse_xfm_bart_large_wiki-v1_0_0.tgz
 
 ```
-cd amr_clausifier/amr_parser/models/model_stog`
+cd amr-clausifier/amr_parser/models/model_stog`
 wget https://cs.taltech.ee/staff/martin.verrev/model_parse_xfm_bart_large_wiki-v1_0_0.tgz
 tar zxvf model_parse_xfm_bart_large_wiki-v1_0_0.tgz
 ```

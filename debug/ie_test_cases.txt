@@ -6,3 +6,10 @@ John gave Mary 1.50.
 John gave Mary 4.20.
 John gave Mary 10.
 John gave mary 420.
+The boy does not want to go.
+
+One night President Obama and his wife Michelle decided to do something out of routine and go for a casual dinner at a restaurant that was not too luxurious.
+
+
+# From AMR-DA paper: Shou2022
+"I was a little skeptical because of how cheap it was."

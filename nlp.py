@@ -28,6 +28,8 @@ def get_verb_phrases(doc):
     matches = matcher(doc)
     spans = []
     for match in matches:
+        if match[2] <= match[1]:
+            continue
         span = doc[match[1]:match[2]]
         # print("VP", span, (match[1], match[2]))
         spans.append([span, (match[1], match[2])])
@@ -62,4 +64,6 @@ def tokenize_sentence_lemmas(snt_text, debug=False):
 
 def get_spans(snt_text):
     doc = nlp(snt_text)
-    return get_verb_phrases(doc) + get_noun_phrases(doc)
+    vps = get_verb_phrases(doc)
+    nps = get_noun_phrases(doc)
+    return vps.append(nps)

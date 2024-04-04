@@ -18,7 +18,6 @@ def get_alignments_rbw(sent, amr_graph, debug=False):
     g = penman.decode(graph_string)
     alignment_strings = g.metadata['alignments']
 
-    debug = True
     if debug:
         print("RBW_align")
         print(graph_string)
@@ -28,7 +27,7 @@ def get_alignments_rbw(sent, amr_graph, debug=False):
 
     text_alignments = alignment_strings.strip().split(" ")
 
-    if bool(role_alignments):
+    if bool(role_alignments) and debug:
         print("RA", role_alignments)
 
     return amr_alignments

@@ -32,14 +32,15 @@ def db_get_amr(snt_id):
     return sent.parse_amr
 
 
-def get_variable_map(g):
+def get_variable_map(g, debug=False):
     vars = g.variables()
     av = cl.get_attribute_values(g)
     cv = cl.get_concept_values(g)
 
-    print("Vars", vars)
-    print("AV", av)
-    print("CV", cv)
+    if debug:
+        print("Vars", vars)
+        print("AV", av)
+        print("CV", cv)
 
     mv = {}
     for k in cv.keys():

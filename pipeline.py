@@ -72,7 +72,7 @@ def _get_ner_category(needle):
                 return category
     return None
 
-def map_ner_types(triples):
+def map_ner_types(triples, debug=False):
     debugs = []
     for idx, it in enumerate(triples):
         if it[1] != ":instance":
@@ -85,8 +85,9 @@ def map_ner_types(triples):
             triples.append((it[0], "type", it[2]))
             triples.append((it[0], "cat", category))
 
-    print("NER Mappings:")
-    pprint.pprint(debugs, indent=2)
+    if debug:
+        print("NER Mappings:")
+        pprint.pprint(debugs, indent=2)
 
     return triples
 
