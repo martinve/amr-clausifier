@@ -88,19 +88,7 @@ def extract_data(rs, roleset_id):
         roles.update({key: {"key": mod, "descr": descr}})
 
 
-    rolelinks = rs.findall("roles/role/rolelinks/rolelink")
-    vncls = None
-    for rl in rolelinks:
-        _res = rl.attrib.get("resource")
-        if _res != "VerbNet":
-            continue
-
-        _cls = rl.attrib.get("class")
-        
-        if not vncls:
-            vncls = _cls
-        elif _cls == vncls:
-            continue    
+    vncls = get_verbnet_class(rs)
 
     return {
         "roleset": roleset_id,
@@ -110,6 +98,31 @@ def extract_data(rs, roleset_id):
     }
 
     # return [[role[0], role[1]] for role in roles]
+
+
+
+
+def get_verbnet_class(rs):
+    rolelinks = rs.findall("roles/role/rolelinks/rolelink")
+    vncls = None
+    for rl in rolelinks:
+        _res = rl.attrib.get("resource")
+        if _res != "VerbNet":
+            continue
+
+        _cls = rl.attrib.get("class")
+        _ver = rl.attrib.get("version")
+        
+        if not vncls:
+            vncls = _cls
+            continue
+        
+        elif _cls != vncls and _ver == "verbnet3.4":
+            vncls == _cls
+            break
+
+    return vncls
+
 
 
 def sample():

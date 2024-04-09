@@ -65,6 +65,12 @@ def apply_propbank_mappings(triples, propbank_mappings):
         if "roles" not in propbank_mappings[subject].keys():
             continue
 
+        if predicate == ":instance":
+            vncls = propbank_mappings[subject].get("vncls", "")
+            if vncls:
+                _newtriple = (subject, "vncls", vncls)
+                triples.append(_newtriple)
+                
         if predicate in propbank_mappings[subject]["roles"].keys():
             _role = propbank_mappings[subject]["roles"][predicate]["key"]
             _descr = propbank_mappings[subject]["roles"][predicate]["descr"]
