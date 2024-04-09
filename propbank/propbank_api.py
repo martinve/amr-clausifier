@@ -7,7 +7,6 @@ from nltk.corpus import treebank, LazyCorpusLoader
 from nltk.corpus.reader.propbank import PropbankCorpusReader
 import pprint
 
-
 # see: https://sites.pitt.edu/~naraehan/ling1330/lecture23_PropBank_in_NLTK.html
 
 # If datasets have not been loaded
@@ -75,6 +74,7 @@ def extract_data(rs, roleset_id):
         lemma = el.text
         lemmas[pos] = lemma
 
+
     for role in rs.findall('roles/role'):
         f = role.attrib.get('f', "")
 
@@ -85,16 +85,27 @@ def extract_data(rs, roleset_id):
         if mod:
             mod = modifiers.get(mod.upper(), mod)
 
-        rolelinks = role.findall("rolelinks")
-        for rl in rolelinks:
-            pprint.pprint(rl)
-
-
         roles.update({key: {"key": mod, "descr": descr}})
+
+
+    rolelinks = rs.findall("roles/role/rolelinks/rolelink")
+    vncls = None
+    for rl in rolelinks:
+        _res = rl.attrib.get("resource")
+        if _res != "VerbNet":
+            continue
+
+        _cls = rl.attrib.get("class")
+        
+        if not vncls:
+            vncls = _cls
+        elif _cls == vncls:
+            continue    
 
     return {
         "roleset": roleset_id,
         "lemmas": lemmas,
+        "vncls": vncls,
         "roles": roles
     }
 
