@@ -7,6 +7,7 @@ from amrlib.alignments.rbw_aligner import RBWAligner
 from amrlib.graph_processing.annotator import add_lemmas
 import penman
 
+from logger import logger
 
 
 
@@ -19,8 +20,8 @@ def get_alignments_rbw(sent, amr_graph, debug=False):
     alignment_strings = g.metadata['alignments']
 
     if debug:
-        print("RBW_align")
-        print(graph_string)
+        logger.info("(alinger.py) RBW_align")
+        pprint.pprint(graph_string)
 
     amr_alignments = penman.surface.alignments(g)
     role_alignments = penman.surface.role_alignments(g)

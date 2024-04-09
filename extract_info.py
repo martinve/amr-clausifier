@@ -13,7 +13,7 @@ import triplemgr
 import pipeline
 
 from gui.unified_parser import get_amr_parse
-
+from logger import logger
 
 debug = True
 
@@ -26,61 +26,61 @@ def debug_print(*text):
 def decompose_amr(amrstr):
     g = penman.decode(amrstr)
     
-    debug_print("Graph:")
-    debug_print(amrstr, "\n")
+    if debug:
+        logger.info("Graph:")
+        logger.debug(amrstr)
 
     snt_text = g.metadata.get("snt")
-    debug_print('Sentence:', snt_text, "\n")
+
+    if debug:
+        logger.debug("Sentence: %s", snt_text)
 
     triples = triplemgr.simplify_amr_triples(g.triples)
 
     amr_new = pipeline.graph_encode_snt(triples, snt_text)
     g = penman.decode(amr_new)
 
-    debug_print("Simplified Graph")
-    debug_print(amr_new, '\n')
-
-    
-
+    if debug:
+        logger.info("Simplified raph:")
+        logger.debug(amr_new)
 
     amr_alignments = aligner.get_alignments_rbw(snt_text, amr_new, debug)
     alignments_dict = aligner.alignments_to_dict(amr_alignments)
 
-    debug_print("Alignments:")
-
-    debug_print("AMR:")
-    pprint.pprint(alignments_dict, indent=2)
+    if debug:
+        logger.info("AMR Alignments:")
+        pprint.pprint(alignments_dict, indent=2)
     # debug_print("Text:")
     # pprint.pprint(text_alignments)
 
     propbank_mappings = pipeline.get_propbank_mappings(triples)
-    debug_print("Propbank mappings:")
-    pprint.pprint(propbank_mappings)
-
-
+    
+    if debug:
+        logger.info("Propbank mappings:")
+        pprint.pprint(propbank_mappings)
 
     triples = pipeline.apply_propbank_mappings(triples, propbank_mappings)
     triples = pipeline.map_ner_types(triples, debug)
 
- 
-
     variable_map = ie.get_variable_map(g, debug)
+    if debug: 
+        logger.info("Variable map: %d", len(variable_map))
+        pprint.pprint(variable_map, indent=2)
 
-  
-
-    debug_print("\nVariable map:", len(variable_map))
-    if debug: pprint.pprint(variable_map, indent=2)
-
+    
     triples = triplemgr.sort_triples(triples, g.top)
-    debug_print("\nSorted Triples:", len(triples))
-    if debug: pprint.pprint(triples)
+    if debug: 
+        logger.info("Sorted Triples: %d", len(triples))
+        pprint.pprint(triples)
 
-    debug_print("\nTriple Subject Count")
+
     variable_map_copy = variable_map.copy()
-    tmp = []
+    _subj_counts = []
     for t in triplemgr.subject_count(triples):
-        tmp.append((t[0], t[1], variable_map_copy[t[0]]))
-    if debug: pprint.pprint(tmp)
+        _subj_counts.append((t[0], t[1], variable_map_copy[t[0]]))
+    if debug: 
+        logger.info("Triple subject count")
+        pprint.pprint(_subj_counts)
 
     # graph_new = Graph(triples)
     # debug_print(graph_new)
@@ -91,26 +91,27 @@ def decompose_amr(amrstr):
     triple_map = triplemgr.triple_map_add_roles(triple_map, pb_role_labels)
     triple_map = triplemgr.triple_map_annotate_propbank(triple_map, propbank_mappings)
     triple_map = triplemgr.triple_map_remove_connectives(triple_map)
-
     triple_map = triplemgr.triple_map_apply_variables(triple_map, variable_map)
 
-    debug_print("\nGrouped Triples:")
     if debug:
+        logger.info("Grouped Triples")
         pprint.pprint(triple_map)
 
     spans = nlp.get_spans(snt_text)
-    if spans:
-        if debug:
-            debug_print("\nNP/VP spans:")
-            pprint.pprint(spans)
+    if spans and debug:
+        logger.info("NP/VP spans:")
+        pprint.pprint(spans)
 
     # removed text alignments from arguments, check logic
     alignment_map = aligner.map_alignments(snt_text, alignments_dict)
-    debug_print("\nAlignment Map:")
-    if debug: pprint.pprint(alignment_map, indent=2)
+    if debug: 
+        logger.info("Alignment Map:")
+        pprint.pprint(alignment_map, indent=2)
 
-    debug_print("\nTriple map")
-    if debug: pprint.pprint(triple_map, indent=2)
+    if debug:
+        logger.info("Triple map")
+        pprint.pprint(triple_map, indent=2)
+
     # debug_print(">>>")
     # triple_map = replace_triples(triple_map, variable_map)
     # pprint.pprint(triple_map, indent=2)
@@ -118,8 +119,9 @@ def decompose_amr(amrstr):
 
     alignment_triple_map = aligner.map_triples(alignment_map, triple_map)
 
-    debug_print("\nAlignment triple map:")
-    if debug: pprint.pprint(alignment_triple_map)
+    if debug: 
+        logger.info("Alignment triple map:")
+        pprint.pprint(alignment_triple_map)
 
     aligned_sent = outputter.get_sentence(alignment_triple_map)
 

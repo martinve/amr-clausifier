@@ -67,6 +67,10 @@ if __name__ == "__main__":
 
     text = "Bill left for Paris. He arrived at noon. Peter was staying there. He was content."
     # text = "Pierre_Vinken, 61 years old, will join the board as a nonexecutive director Nov. 29. He will be happy."
+    text = "John and Mary went to the beach. The girl was glad. The bird went there as well. They were all happy."
+
+    text = "John, Mary and the bird went to the beach. They were all happy."
+
     doc = nlp(text)
     ref = resolve_references(doc)
     print(ref)

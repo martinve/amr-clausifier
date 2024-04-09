@@ -2,7 +2,7 @@ import penman
 import pprint
 import propbank.propbank_api as pb
 import propbank.propbank_amr_api as pbamr
-
+from logger import logger
 
 
 """
@@ -53,14 +53,29 @@ def get_propbank_mappings(triples):
 
 
 def apply_propbank_mappings(triples, propbank_mappings):
-    for idx, it in enumerate(triples):
-        if it[0] not in propbank_mappings.keys():
-            continue
-        if "roles" in propbank_mappings[it[0]].keys():
-            if it[1] in propbank_mappings[it[0]]["roles"].keys():
-                newrole = propbank_mappings[it[0]]["roles"][it[1]]["key"]
-                triples[idx] = (it[0], newrole, it[2])
 
+    for idx, it in enumerate(triples):
+
+        subject, predicate, object = it
+        # logger.warn(it)
+
+        if subject not in propbank_mappings.keys():
+            continue
+
+        if "roles" not in propbank_mappings[subject].keys():
+            continue
+
+        if predicate in propbank_mappings[subject]["roles"].keys():
+            _role = propbank_mappings[subject]["roles"][predicate]["key"]
+            _descr = propbank_mappings[subject]["roles"][predicate]["descr"]
+
+            triples[idx] = (subject, _role, object)
+
+            _newtriple = (object, "role_descr", _descr)
+            triples.append(_newtriple)
+
+            _newtriple = (object, "evt", subject)
+            triples.append(_newtriple)
 
     return triples
 
@@ -86,7 +101,7 @@ def map_ner_types(triples, debug=False):
             triples.append((it[0], "cat", category))
 
     if debug:
-        print("NER Mappings:")
+        logger.info("(pipeline.py) NER Mappings:")
         pprint.pprint(debugs, indent=2)
 
     return triples

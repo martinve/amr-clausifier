@@ -25,7 +25,7 @@ amr1 = """
                :ARG1 (w2 / window))))
 """
 
-amr2 = """
+amr2 = """cd 
 # He was charged with public intoxication and resisting arrest.
 (c / charge-05
    :ARG1 (h / he)

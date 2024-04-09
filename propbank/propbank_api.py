@@ -5,6 +5,7 @@ from xml.etree import ElementTree
 import csv
 from nltk.corpus import treebank, LazyCorpusLoader
 from nltk.corpus.reader.propbank import PropbankCorpusReader
+import pprint
 
 
 # see: https://sites.pitt.edu/~naraehan/ling1330/lecture23_PropBank_in_NLTK.html
@@ -66,7 +67,6 @@ def describe(roleset_id, do_print=False, examples=False):
 
 def extract_data(rs, roleset_id):
     roles = {}
-    rows = []
 
     aliases = rs.findall("aliases/alias")
     lemmas = {}
@@ -78,14 +78,6 @@ def extract_data(rs, roleset_id):
     for role in rs.findall('roles/role'):
         f = role.attrib.get('f', "")
 
-        rolelist = []
-        for cls in role.findall("vnrole"):
-            theta = cls.attrib["vntheta"]
-            if theta not in rolelist:
-                rolelist.append(theta)
-        thetas = "|".join(rolelist)
-
-        # print(f"ARG{role.attrib['n']}: {role.attrib['descr']} {f} {thetas}")
         key = ":ARG" + str(role.attrib['n'])
         descr = role.attrib.get("descr", "")
 
@@ -93,7 +85,11 @@ def extract_data(rs, roleset_id):
         if mod:
             mod = modifiers.get(mod.upper(), mod)
 
-        rows.append([key, thetas, descr, mod])
+        rolelinks = role.findall("rolelinks")
+        for rl in rolelinks:
+            pprint.pprint(rl)
+
+
         roles.update({key: {"key": mod, "descr": descr}})
 
     return {
@@ -229,7 +225,7 @@ if __name__ == "__main__":
         print(roles)
 
     else:
-        roles = describe("good.02", True, True)
-        # print("Done")
+        roles = describe("eat-01", True, True)
+        print("Done")
         # explore()
         # sample()
