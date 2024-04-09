@@ -103,23 +103,23 @@ def extract_data(rs, roleset_id):
 
 
 def get_verbnet_class(rs):
+
     rolelinks = rs.findall("roles/role/rolelinks/rolelink")
     vncls = None
     for rl in rolelinks:
         _res = rl.attrib.get("resource")
-        if _res != "VerbNet":
-            continue
-
         _cls = rl.attrib.get("class")
         _ver = rl.attrib.get("version")
+        
+        if _res != "VerbNet":
+            continue
         
         if not vncls:
             vncls = _cls
             continue
-        
-        elif _cls != vncls and _ver == "verbnet3.4":
-            vncls == _cls
-            break
+
+        if _ver == "verbnet3.4":
+            return _cls
 
     return vncls
 
@@ -249,7 +249,7 @@ if __name__ == "__main__":
         print(roles)
 
     else:
-        roles = describe("eat-01", True, True)
+        roles = describe("live-01", True, True)
         print("Done")
         # explore()
         # sample()
