@@ -120,6 +120,9 @@ def get_verbnet_class(rs):
 
         if _ver == "verbnet3.4":
             return _cls
+        
+        if _cls != vncls:
+            vncls == _cls
 
     return vncls
 
