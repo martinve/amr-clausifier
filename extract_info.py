@@ -122,13 +122,11 @@ def decompose_amr(amrstr):
     if debug: 
         logger.info("Alignment triple map:")
         pprint.pprint(alignment_triple_map)
+        print("\n===\n")
 
     aligned_sent = outputter.get_sentence(alignment_triple_map)
 
-    print("===")
-    print("IN:", snt_text)
-    print('')
-    print("OUT:", aligned_sent)
+    print(aligned_sent)
 
 
 
