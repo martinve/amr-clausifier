@@ -2,6 +2,8 @@ import sys
 import json
 import pprint
 
+from logger import logger
+
 import wikivalidate
 import wikivalidate as wiki
 
@@ -68,14 +70,16 @@ def _simplify_name_variable(triples):
     return triples
 
 
-def _unify_quantifiers(triples):
+def _unify_quantifiers(triples, debug=False):
     """
     Replace `:mod (a / all)` with :quant (a / all) to
     normalize with other quantifiers
     """
 
     allquants = filter_triples(triples, role=":instance", target="all|any")
-    print(allquants)
+    if debug:
+        logger.debug("_unify_quantifiers: %s", allquants)
+        
     for t in allquants:
         allmods = filter_triples(triples, role=":mod", target=t[0])
         for t0 in allmods:
@@ -85,22 +89,36 @@ def _unify_quantifiers(triples):
     return triples
 
 
-def simplify_amr_triples(triples):
+def _fix_invalid_strings(triples):
+    for idx, it in enumerate(triples):
+        valfield = it[2]
+        if "/" not in valfield:
+            continue
+
+        valfield = valfield.replace("/", "_")
+        valfield = valfield.replace('"', "")
+
+        triples[idx] = (it[0], it[1], valfield)   
+    return triples
+
+
+def simplify_amr_triples(triples, debug=False):
     """
     Perform simplification of AMR triples:
     - remove empty Wiki tags
     - merge name variables and map them directly to concept
     """
-
     # Merge :name variables, remove unneeded steps
     triples = _simplify_name_variable(triples)
     triples = _unify_quantifiers(triples)
     triples = _remove_invalid_wiki_tags(triples)
+    triples = _fix_invalid_strings(triples)
 
     connectives = filter_triples(triples, role=":instance", target='and')
     for conn in connectives:
         conn_children = filter_triples(triples, source=conn[0])
-        print("Conn:", conn_children)
+        if debug:
+            logger.error("Conn: %s", conn_children)
 
     return triples
 
@@ -153,13 +171,36 @@ def triples_to_dict(triples):
     return triple_map
 
 
+
 def triple_map_remove_connectives(triple_map):
     triple_map_copy = triple_map.copy()
+
     for key in triple_map.keys():
         for pred, value in triple_map[key]:
             if pred == "instance" and value in ["and", "or"]:
+
+                parents = triple_map_search(triple_map, key, role="instance", target=value)
+
+                logger.error(triple_map[key])
+                # logger.error("Pred: %s", pred)
+                # logger.error("Value: %s", value)
+                logger.error("Key: %s", key)
                 triple_map_copy.pop(key)
     return triple_map_copy
+
+
+
+def triple_map_search(triple_map, key, role=None, target=None):
+    if key not in triple_map.keys():
+        return []
+
+    parents = []
+    for pred, value in triple_map[key]:
+        if pred == role and value == target:
+            parents.append(key)
+    return parents
+
+
 
 
 def triple_map_apply_variables(triple_map, variable_dict):
@@ -171,12 +212,15 @@ def triple_map_apply_variables(triple_map, variable_dict):
     return triple_map_copy
 
 
-def subject_count(triples):
+def subject_count(triples, debug=False):
     subj_count = {}
+    if debug:
+        logger.debug("triplemgr.py:subject_count(): triples %s", triples)
     for triple in triples:
-        if triple[0] not in subj_count.keys():
-            subj_count[triple[0]] = 1
+        idx = triple[0]
+        if idx not in subj_count.keys():
+            subj_count[idx] = 1
             continue
-        subj_count[triple[0]] += 1
+        subj_count[idx] += 1
 
     return sorted(subj_count.items(), key=lambda x:x[1])

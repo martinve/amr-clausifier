@@ -104,4 +104,20 @@ amr7 = """
                 :name Hawaii)) 
 """
 
-test_case = amr5
+amr8 = """
+# ::snt Betty has only half of the money she needs.
+(h / have-03
+      :ARG0 (p / person
+            :wiki -
+            :name (n / name
+                  :op1 "Betty"))
+      :ARG1 (m / money
+            :ARG1-of (ii / include-91
+                  :ARG3 "1/2"
+                  :ARG2 (m2 / money
+                        :ARG1-of (n2 / need-01
+                              :ARG0 p)))))
+"""
+
+
+# test_case = amr5

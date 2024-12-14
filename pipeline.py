@@ -107,8 +107,9 @@ def map_ner_types(triples, debug=False):
             triples.append((it[0], "cat", category))
 
     if debug:
-        logger.info("(pipeline.py) NER Mappings:")
-        pprint.pprint(debugs, indent=2)
+        if len(debugs):
+            logger.info("(pipeline.py) NER Mappings:")
+            pprint.pprint(debugs, indent=2)
 
     return triples
 

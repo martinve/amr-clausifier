@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import pprint
 
 from sqlalchemy import create_engine
@@ -7,16 +9,13 @@ import settings as cnf
 import penman
 from logger import logger
 import propbank.propbank_api as pb
-import amr_clausifier as cl
+import logicconvert.amr_clausifier as cl
 
 engine = create_engine(f"sqlite:///cache/{cnf.dbfile}")
 
 Session = sessionmaker()
 Session.configure(bind=engine)
 db = Session()
-
-
-
 
 
 def debug_print(var, comment=False):
@@ -38,9 +37,9 @@ def get_variable_map(g, debug=False):
     cv = cl.get_concept_values(g)
 
     if debug:
-        print("Vars", vars)
-        print("AV", av)
-        print("CV", cv)
+        logger.debug(f"(IE) Variables: %s", vars)
+        logger.debug("(IE) Attribute Values: %s", av)
+        logger.debug("(IE) Concept Values: %s", cv)
 
     mv = {}
     for k in cv.keys():
@@ -50,6 +49,7 @@ def get_variable_map(g, debug=False):
             mv[k] = cv[k]
         else:
             mv[k] = av[k]
+            
     return mv
 
 

@@ -15,7 +15,7 @@ import pipeline
 from gui.unified_parser import get_amr_parse
 from logger import logger
 
-debug = True
+debug = False
 
 
 def debug_print(*text):
@@ -23,9 +23,9 @@ def debug_print(*text):
         print(*text)
 
 
-def decompose_amr(amrstr):
+def get_aligned_triples(amrstr):
     g = penman.decode(amrstr)
-    
+
     if debug:
         logger.info("Graph:")
         logger.debug(amrstr)
@@ -41,13 +41,14 @@ def decompose_amr(amrstr):
     g = penman.decode(amr_new)
 
     if debug:
-        logger.info("Simplified raph:")
+        logger.info("Simplified Graph:")
         logger.debug(amr_new)
 
-    amr_alignments = aligner.get_alignments_rbw(snt_text, amr_new, debug)
+
+    amr_alignments = aligner.get_alignments_rbw(snt_text, amr_new, debug=False)
     alignments_dict = aligner.alignments_to_dict(amr_alignments)
 
-    if debug:
+    if debug and False:
         logger.info("AMR Alignments:")
         pprint.pprint(alignments_dict, indent=2)
     # debug_print("Text:")
@@ -62,12 +63,12 @@ def decompose_amr(amrstr):
     triples = pipeline.apply_propbank_mappings(triples, propbank_mappings)
     triples = pipeline.map_ner_types(triples, debug)
 
-    variable_map = ie.get_variable_map(g, debug)
+    variable_map = ie.get_variable_map(g, debug=debug)
     if debug: 
         logger.info("Variable map: %d", len(variable_map))
         pprint.pprint(variable_map, indent=2)
 
-    
+
     triples = triplemgr.sort_triples(triples, g.top)
     if debug: 
         logger.info("Sorted Triples: %d", len(triples))
@@ -76,8 +77,19 @@ def decompose_amr(amrstr):
 
     variable_map_copy = variable_map.copy()
     _subj_counts = []
-    for t in triplemgr.subject_count(triples):
-        _subj_counts.append((t[0], t[1], variable_map_copy[t[0]]))
+
+    triple_subj_count = triplemgr.subject_count(triples, debug=debug)
+
+    # sort triples by subject
+    for t in triple_subj_count:
+        key = t[0]
+        if key not in variable_map_copy.keys():
+            logger.error("Key error: %s", key)
+            logger.error("triple_subj_count: %s", triple_subj_count) 
+            logger.error("variable_map_copy: %s", variable_map_copy)
+            logger.error("Available keys: %s", variable_map_copy.keys())
+            continue
+        _subj_counts.append((key, t[1], variable_map_copy[key]))
     if debug: 
         logger.info("Triple subject count")
         pprint.pprint(_subj_counts)
@@ -88,10 +100,31 @@ def decompose_amr(amrstr):
     pb_role_labels = pipeline.get_role_labels()
 
     triple_map = triplemgr.triples_to_dict(triples)
+
+    # logger.info("triplemgr.triples_to_dict")
+    # pprint.pprint(triple_map)
+
     triple_map = triplemgr.triple_map_add_roles(triple_map, pb_role_labels)
+
+    # logger.info("triplemgr.triple_map_add_roles")
+    # pprint.pprint(triple_map)
+
     triple_map = triplemgr.triple_map_annotate_propbank(triple_map, propbank_mappings)
+
+    # logger.info("triplemgr.triple_map_annotate_propbank")
+    # pprint.pprint(triple_map)
+
     triple_map = triplemgr.triple_map_remove_connectives(triple_map)
+
+    # logger.info("triplemgr.triple_map_remove_connectives")
+    # pprint.pprint(triple_map)
+    # sys.exit(-1)
+
     triple_map = triplemgr.triple_map_apply_variables(triple_map, variable_map)
+
+    if debug:
+        logger.info("triplemgr.triple_map_apply_variables")
+        pprint.pprint(triple_map)
 
     if debug:
         logger.info("Grouped Triples")
@@ -124,21 +157,47 @@ def decompose_amr(amrstr):
         pprint.pprint(alignment_triple_map)
         print("\n===\n")
 
-    aligned_sent = outputter.get_sentence(alignment_triple_map)
-
-    print(aligned_sent)
+    return alignment_triple_map
 
 
+def snt_from_triples(triple_map):
+    snt = []
+    for triple in triple_map:
+        snt.append(triple[0])
+    return " ".join(snt)
+
+
+def decompose_amr(amr):
+    aligned_triples = get_aligned_triples(amr)
+    aligned_sent = outputter.get_sentence(aligned_triples)
+    return aligned_sent
+
+
+def decompose_amr_triples(amr):
+    aligned_triples = get_aligned_triples(amr)
+    lemmas = nlp.tokenize_sentence_lemmas(snt_from_triples(aligned_triples))
+    pprint.pprint(aligned_triples)
+
+    clauses = []
+    for idx, triple in enumerate(aligned_triples):
+        lemma = lemmas[idx]
+        clause = (lemma, triple[1])
+        clauses.append(clause)    
+
+    # pprint.pprint(clauses)
+    # sys.exit(-1)
 
 
 if __name__ == "__main__":
 
     snt = sys.argv[1:]
     if len(snt) < 1:
-        _amr = examples.amr4  # test_case
+        _amr = examples.amr8  # test_case
         decompose_amr(_amr)
-
-
-    snt = " ".join(snt)
-    amr = get_amr_parse(snt)
-    decompose_amr(amr)
+    else:
+        snt = " ".join(snt)
+        amr = get_amr_parse(snt)
+        
+        # out = decompose_amr(amr)
+        out = decompose_amr_triples(amr)
+        print(out)

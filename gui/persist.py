@@ -97,6 +97,8 @@ def db_update_snt_logic(db, snt):
     except:
         siml_logic = "ERROR"
 
+    print("Simplified logic:", simpl_logic)     
+
     snt.logic = pickle.dumps(logic)
     snt.context = pickle.dumps(context)
     snt.simpl_logic = pickle.dumps(simpl_logic)

@@ -20,6 +20,7 @@ pb_role_modifiers = {
     "CXN": "Construction",
     "PAG": "Agent",
     "PPT": "Patient",
-    "VSP": "Verb-specific"
+    "VSP": "Verb-specific",
+    "XINST": "instrument"
 }
 

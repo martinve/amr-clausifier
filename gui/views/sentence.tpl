@@ -29,15 +29,13 @@
     <div class="col">
         <h3>Logic</h3>
 
-        <!--
-
-        -->
+        <h4>Approach 0:</h4>
         <code>{{ formatter.format_logic(sentence.simpl_logic) }}</code>
 
-        <!--
-        <h4>Previous approach</h4>
+        
+        <h4>Approach 1:</h4>
         <code class="mt-4">{{ formatter.format_logic(sentence.logic) }}</code>
-        -->
+        
     </div>
     <div class="col">
         <h3>Context</h3>
