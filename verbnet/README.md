@@ -1,0 +1,1 @@
+https://uvi.colorado.edu/verbnet/pay-68
