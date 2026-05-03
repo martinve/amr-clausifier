@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
 import setup_path
+import time
 import os, sys, json
 import bottle
 from bottle import run, request
 import settings as cfg
+from logger import logger
 
 try:
     import amrlib
@@ -49,12 +51,18 @@ def info():
 
 def parse_text(text):
     global stog
+
+    ts = time.time()
     g = stog.parse_sents([text])
     amr = g[0]
+
+    duration = round(time.time() - ts, 3)
+
     result = {
         "text": text,
         "parse": amr,
-        "model": cfg.amr_parse_model
+        "model": cfg.amr_parse_model,
+        "duration": duration
     }
 
     return result
@@ -73,5 +81,5 @@ if __name__ == "__main__":
         if not os.path.exists(model_path):
             print("ERROR. Parse model not found:", model_path, "\nExiting.")
             sys.exit(-1)
-        stog = amrlib.load_stog_model(model_dir=model_path)
+        stog = amrlib.load_stog_model(model_dir=model_path, num_beams=1, batch_size=32)
     run(host="localhost", port=server_port, app=app)

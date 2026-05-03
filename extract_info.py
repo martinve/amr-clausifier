@@ -2,6 +2,7 @@
 
 import pprint
 import sys
+import time
 
 import penman
 import debug.extract_info_test_cases as examples
@@ -168,6 +169,7 @@ def snt_from_triples(triple_map):
 
 
 def decompose_amr(amr):
+    logger.debug(amr)
     aligned_triples = get_aligned_triples(amr)
     aligned_sent = outputter.get_sentence(aligned_triples)
     return aligned_sent
@@ -196,7 +198,9 @@ if __name__ == "__main__":
         decompose_amr(_amr)
     else:
         snt = " ".join(snt)
+        st = time.time()
         amr = get_amr_parse(snt)
+        logger.debug(f"Parsed sentence AMR in {round(time.time() - st, 3)} seconds")
         
         # out = decompose_amr(amr)
         out = decompose_amr_triples(amr)

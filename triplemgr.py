@@ -52,6 +52,8 @@ def _remove_invalid_wiki_tags(triples):
             triples_copy.remove(it)
         if not wikivalidate.validate(target):
             print("Remove target:", target)
+            # if it in triples_copy:
+            #    triples_copy.remove(it)
             triples_copy.remove(it)
     return triples_copy
 

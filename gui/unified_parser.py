@@ -1,18 +1,19 @@
 import stanza
 
-import setup_path
+# import setup_path
 import json
 import sys, os
 import time
 import requests
 import settings as cfg
+from logger import logger
 
 
 def get_amr_parse(sent):
     srv = f"http://{cfg.amr_server_host}:{cfg.amr_server_port}"
     try:
-        res = requests.get(f"{srv}/?text={sent}",
-                     headers={'Accept': 'application/json'})
+        res = requests.get(f"{srv}/?text={sent}", headers={'Accept': 'application/json'})
+        logger.info(res.json())
         return res.json()["parse"]
     except:
         print(f"""
