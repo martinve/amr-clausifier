@@ -43,13 +43,20 @@ def sort_triples(triples, top):
 
 
 def _remove_invalid_wiki_tags(triples):
+
+    logger.info(f"====\nTriples\n{triples}\n")
+
     # remove empty wikipedia links
     wikis = filter_triples(triples, role=":wiki")
+
+    logger.info(f"====\nTriples\n{wikis}\n")
+
     triples_copy = triples.copy()
     for it in wikis:
         target = it[2]
         if target == "-":
             triples_copy.remove(it)
+            continue
         if not wikivalidate.validate(target):
             print("Remove target:", target)
             # if it in triples_copy:
